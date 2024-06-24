@@ -19,9 +19,9 @@ public class UserServices implements UserDetailsService{
 		this.repository = repository;
 	}
 	
-	public User salvar(String userName, String password) {
+	public User salvar(String username, String password) {
 		User usuario = new User();
-		usuario.setUserName(userName);
+		usuario.setUsername(username);
 		usuario.setPassword(password);
 		usuario.setAccountNonExpired(true);
 		usuario.setAccountNonLocked(true);

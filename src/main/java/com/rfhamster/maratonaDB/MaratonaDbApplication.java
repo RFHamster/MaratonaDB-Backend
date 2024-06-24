@@ -15,6 +15,7 @@ public class MaratonaDbApplication {
 		String result = encoder.encode("teste");
 		System.out.println(result);
 		*/
+
 	}
 
 }

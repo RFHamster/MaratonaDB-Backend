@@ -46,7 +46,7 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
                     .requestMatchers(HttpMethod.POST, "/auth/signin").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/auth/refresh/**").permitAll()
+                    .requestMatchers(HttpMethod.PUT, "/auth/refresh/**").permitAll()
                     .anyRequest().authenticated()
             )
             .cors(cors -> {})

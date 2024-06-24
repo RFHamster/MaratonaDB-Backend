@@ -10,13 +10,20 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.rfhamster.maratonaDB.vo.security.UserRole;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.MapsId;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -27,38 +34,59 @@ public class User implements UserDetails, Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "user_id")
 	private Long id;
 	
 	@Column(name = "username", unique = true)
-	private String userName;
+	private String username;
 	
 	@Column(name = "password")
+	@JsonIgnore
 	private String password;
 	
 	@Column(name = "account_non_expired")
+	@JsonIgnore
 	private Boolean accountNonExpired;
 	
 	@Column(name = "account_non_locked")
+	@JsonIgnore
 	private Boolean accountNonLocked;
 	
 	@Column(name = "credentials_non_expired")
+	@JsonIgnore
 	private Boolean credentialsNonExpired;
 	
 	@Column(name = "enabled")
+	@JsonIgnore
 	private Boolean enabled;
 	
+	@Enumerated(EnumType.STRING)
 	@Column(name = "role")
 	private UserRole role;
 	
+	@Enumerated(EnumType.STRING)
+	@Column(name = "faixa")
+	private FaixasEnum faixa;
+	
+	@Column(name = "pontuacao")
+	private Long pontos;
+	
+	@OneToOne(targetEntity = Pessoa.class, fetch = FetchType.EAGER)
+    @MapsId
+    @JoinColumn(name = "user_id", referencedColumnName = "pessoa_id", insertable = false, updatable = false)
+	private Pessoa pessoa;
+	
 	public User() {}
-
+	
+	@JsonIgnore
 	public List<String> getRoles() {
 		List<String> roles = new ArrayList<>();
 		roles.add("ROLE_USER");
 		if(this.role == UserRole.ADMIN) roles.add("ROLE_ADMIN");
 		return roles;
 	}
-
+	
+	@JsonIgnore
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		if(this.role == UserRole.ADMIN) return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"),new SimpleGrantedAuthority("ROLE_USER"));
@@ -72,7 +100,7 @@ public class User implements UserDetails, Serializable {
 
 	@Override
 	public String getUsername() {
-		return this.userName;
+		return this.username;
 	}
 
 	@Override
@@ -103,12 +131,8 @@ public class User implements UserDetails, Serializable {
 		this.id = id;
 	}
 
-	public String getUserName() {
-		return userName;
-	}
-
-	public void setUserName(String userName) {
-		this.userName = userName;
+	public void setUsername(String userName) {
+		this.username = userName;
 	}
 
 	public Boolean getAccountNonExpired() {
@@ -155,10 +179,34 @@ public class User implements UserDetails, Serializable {
 		this.role = role;
 	}
 
+	public Pessoa getPessoa() {
+		return pessoa;
+	}
+
+	public void setPessoa(Pessoa pessoa) {
+		this.pessoa = pessoa;
+	}
+
+	public FaixasEnum getFaixa() {
+		return faixa;
+	}
+
+	public void setFaixa(FaixasEnum faixa) {
+		this.faixa = faixa;
+	}
+
+	public Long getPontos() {
+		return pontos;
+	}
+
+	public void setPontos(Long pontos) {
+		this.pontos = pontos;
+	}
+
 	@Override
 	public int hashCode() {
-		return Objects.hash(accountNonExpired, accountNonLocked, credentialsNonExpired, enabled, id, password, role,
-				userName);
+		return Objects.hash(accountNonExpired, accountNonLocked, credentialsNonExpired, enabled, faixa, id, password,
+				pessoa, pontos, role, username);
 	}
 
 	@Override
@@ -173,10 +221,9 @@ public class User implements UserDetails, Serializable {
 		return Objects.equals(accountNonExpired, other.accountNonExpired)
 				&& Objects.equals(accountNonLocked, other.accountNonLocked)
 				&& Objects.equals(credentialsNonExpired, other.credentialsNonExpired)
-				&& Objects.equals(enabled, other.enabled) && Objects.equals(id, other.id)
-				&& Objects.equals(password, other.password) && role == other.role
-				&& Objects.equals(userName, other.userName);
+				&& Objects.equals(enabled, other.enabled) && faixa == other.faixa && Objects.equals(id, other.id)
+				&& Objects.equals(password, other.password) && Objects.equals(pessoa, other.pessoa)
+				&& Objects.equals(pontos, other.pontos) && role == other.role
+				&& Objects.equals(username, other.username);
 	}
-
-	
 }
