@@ -20,17 +20,16 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.rfhamster.maratonaDB.model.Pessoa;
 import com.rfhamster.maratonaDB.repositories.UserRepository;
 import com.rfhamster.maratonaDB.securityJwt.JwtTokenProvider;
-import com.rfhamster.maratonaDB.services.AuthServices;
+import com.rfhamster.maratonaDB.vo.UserSigninVO;
 import com.rfhamster.maratonaDB.vo.security.AccountCredentialsVO;
+import com.rfhamster.maratonaDB.vo.security.TokenVO;
 
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
-
-	@Autowired
-	AuthServices authServices;
 	
 	@Autowired
 	private AuthenticationManager authenticationManager;
@@ -41,14 +40,14 @@ public class AuthController {
 	@Autowired
 	private UserRepository repository;
 	
-	@SuppressWarnings("rawtypes")
+
 	@PostMapping(value = "/signin")
-	public ResponseEntity signin(@RequestBody AccountCredentialsVO data) {
+	public ResponseEntity<?> signin(@RequestBody AccountCredentialsVO data) {
 		if (checkIfParamsIsNotNull(data))
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid client request!");
 		
 		Map<String, Object> dadosAutenticacao = new HashMap<String, Object>();
-		
+		UserSigninVO userVo;
 		try {
 			var username = data.getUsername();
 			var password = data.getPassword();
@@ -56,17 +55,17 @@ public class AuthController {
 			if(!authenticate.isAuthenticated()) {
 				return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid client request!");
 			}
-			
 			var user = repository.findByUsername(username);
 			
-			
 			if (user != null) {
+				Pessoa p = user.getPessoa();
+				p.setUsuario(null);
+				userVo = new UserSigninVO(user.getId(), username, user.getRole(), user.getFaixa(), user.getPontos(), p);
 				dadosAutenticacao.put("tokenResponse", tokenProvider.createAccessToken(username, user.getRoles()));
-				dadosAutenticacao.put("usuario", user);
+				dadosAutenticacao.put("usuario", userVo);
 			} else {
 				throw new UsernameNotFoundException("Username " + username + " not found!");
 			}
-
 		} catch (Exception e) {
 			throw new BadCredentialsException("Invalid username/password supplied!");
 		}
@@ -81,11 +80,23 @@ public class AuthController {
 		if (checkIfParamsIsNotNull(username, refreshToken))
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid client request!");
 		
-		var token = authServices.refreshToken(username, refreshToken);
-		if (token == null) return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid client request!");
-		return token;
+		
+		var user = repository.findByUsername(username);
+		
+		var tokenResponse = new TokenVO();
+		if (user != null) {
+			tokenResponse = tokenProvider.refreshToken(refreshToken);
+		} else {
+			throw new UsernameNotFoundException("Username " + username + " not found!");
+		}
+		
+		
+		if (tokenResponse == null) return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid client request!");
+		return ResponseEntity.ok(tokenResponse);
 	}
 
+	
+	
 	private boolean checkIfParamsIsNotNull(String username, String refreshToken) {
 		return refreshToken == null || refreshToken.isBlank() ||
 				username == null || username.isBlank();

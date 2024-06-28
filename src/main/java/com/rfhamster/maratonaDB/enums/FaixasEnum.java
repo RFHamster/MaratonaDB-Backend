@@ -1,4 +1,4 @@
-package com.rfhamster.maratonaDB.model;
+package com.rfhamster.maratonaDB.enums;
 
 public enum FaixasEnum {
 	BRANCA("branca"),

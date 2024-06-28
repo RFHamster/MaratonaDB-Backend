@@ -10,7 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.rfhamster.maratonaDB.enums.FaixasEnum;
 import com.rfhamster.maratonaDB.vo.security.UserRole;
 
 import jakarta.persistence.Column;
@@ -21,9 +21,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 
 @Entity
@@ -41,23 +40,18 @@ public class User implements UserDetails, Serializable {
 	private String username;
 	
 	@Column(name = "password")
-	@JsonIgnore
 	private String password;
 	
 	@Column(name = "account_non_expired")
-	@JsonIgnore
 	private Boolean accountNonExpired;
 	
 	@Column(name = "account_non_locked")
-	@JsonIgnore
 	private Boolean accountNonLocked;
 	
 	@Column(name = "credentials_non_expired")
-	@JsonIgnore
 	private Boolean credentialsNonExpired;
 	
 	@Column(name = "enabled")
-	@JsonIgnore
 	private Boolean enabled;
 	
 	@Enumerated(EnumType.STRING)
@@ -71,14 +65,12 @@ public class User implements UserDetails, Serializable {
 	@Column(name = "pontuacao")
 	private Long pontos;
 	
-	@OneToOne(targetEntity = Pessoa.class, fetch = FetchType.EAGER)
-    @MapsId
-    @JoinColumn(name = "user_id", referencedColumnName = "pessoa_id", insertable = false, updatable = false)
+	@OneToOne(fetch=FetchType.LAZY, mappedBy = "usuario")
+	@PrimaryKeyJoinColumn
 	private Pessoa pessoa;
 	
 	public User() {}
 	
-	@JsonIgnore
 	public List<String> getRoles() {
 		List<String> roles = new ArrayList<>();
 		roles.add("ROLE_USER");
@@ -86,7 +78,6 @@ public class User implements UserDetails, Serializable {
 		return roles;
 	}
 	
-	@JsonIgnore
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		if(this.role == UserRole.ADMIN) return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"),new SimpleGrantedAuthority("ROLE_USER"));
