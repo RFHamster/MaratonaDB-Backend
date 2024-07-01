@@ -71,6 +71,25 @@ public class Pessoa implements Serializable{
 	@JoinColumn(name = "pessoa_id")
 	private User usuario;
 	
+	public Pessoa() {}
+	
+	public Pessoa(String nomeCompleto, String matricula, String cpf, String rg, String orgaoEmissor,
+			TamanhoCamisaENUM tamanhoCamisa, String email, String telefone, Boolean primeiraGrad,
+			LocalDate dataEntrada, User usuario) {
+		this.nomeCompleto = nomeCompleto;
+		this.matricula = matricula;
+		this.cpf = cpf;
+		this.rg = rg;
+		this.orgaoEmissor = orgaoEmissor;
+		this.tamanhoCamisa = tamanhoCamisa;
+		this.email = email;
+		this.telefone = telefone;
+		this.primeiraGrad = primeiraGrad;
+		this.atribuicao = "";
+		this.dataEntrada = dataEntrada;
+		this.dataSaida = null;
+		this.usuario = usuario;
+	}
 	public Long getId() {
 		return id;
 	}

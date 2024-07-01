@@ -12,6 +12,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -21,10 +23,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rfhamster.maratonaDB.model.Pessoa;
+import com.rfhamster.maratonaDB.model.User;
 import com.rfhamster.maratonaDB.repositories.UserRepository;
 import com.rfhamster.maratonaDB.securityJwt.JwtTokenProvider;
+import com.rfhamster.maratonaDB.services.UserServices;
 import com.rfhamster.maratonaDB.vo.UserSigninVO;
 import com.rfhamster.maratonaDB.vo.security.AccountCredentialsVO;
+import com.rfhamster.maratonaDB.vo.security.AccountSignInVO;
 import com.rfhamster.maratonaDB.vo.security.TokenVO;
 
 @RestController
@@ -40,6 +45,18 @@ public class AuthController {
 	@Autowired
 	private UserRepository repository;
 	
+	@Autowired
+	private UserServices service;
+	
+	@PostMapping(value = "/register")
+	public ResponseEntity<?> registrarUserComum(@RequestBody AccountSignInVO data) {
+		PasswordEncoder encoder = new BCryptPasswordEncoder();
+		Pessoa p = new Pessoa(data.getNomeCompleto(), data.getMatricula(), data.getCpf(), data.getRg(), data.getOrgaoEmissor(),
+				data.getTamanhoCamisa(), data.getEmail(), data.getTelefone(), data.getPrimeiraGrad(),
+				data.getDataEntrada(), null);
+		User u = service.salvarUserComum(data.getUsername(), encoder.encode(data.getPassword()), p);
+		return ResponseEntity.ok(u);
+	}
 
 	@PostMapping(value = "/signin")
 	public ResponseEntity<?> signin(@RequestBody AccountCredentialsVO data) {

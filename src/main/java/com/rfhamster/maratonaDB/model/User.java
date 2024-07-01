@@ -71,6 +71,23 @@ public class User implements UserDetails, Serializable {
 	
 	public User() {}
 	
+	public User(String username, String password, Boolean accountNonExpired, Boolean accountNonLocked,
+			Boolean credentialsNonExpired, Boolean enabled, UserRole role, FaixasEnum faixa, Long pontos,
+			Pessoa pessoa) {
+		this.username = username;
+		this.password = password;
+		this.accountNonExpired = accountNonExpired;
+		this.accountNonLocked = accountNonLocked;
+		this.credentialsNonExpired = credentialsNonExpired;
+		this.enabled = enabled;
+		this.role = role;
+		this.faixa = faixa;
+		this.pontos = pontos;
+		this.pessoa = pessoa;
+	}
+
+
+
 	public List<String> getRoles() {
 		List<String> roles = new ArrayList<>();
 		roles.add("ROLE_USER");

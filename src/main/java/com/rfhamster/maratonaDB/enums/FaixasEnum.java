@@ -1,8 +1,9 @@
 package com.rfhamster.maratonaDB.enums;
 
 public enum FaixasEnum {
+	SEM("sem_faixa"),
 	BRANCA("branca"),
-	AMARELA("AMARELA"),
+	AMARELA("amarela"),
 	LARANJA("laranja"),
 	VERDE("verde"),
 	ROXO("roxo"),
