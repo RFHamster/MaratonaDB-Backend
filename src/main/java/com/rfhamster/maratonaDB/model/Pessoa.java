@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.rfhamster.maratonaDB.enums.TamanhoCamisaENUM;
 
 import jakarta.persistence.Column;
@@ -66,6 +67,7 @@ public class Pessoa implements Serializable{
 	@Column(name = "saida_projeto")
 	private LocalDate dataSaida;
 	
+	@JsonIgnore
 	@OneToOne(fetch=FetchType.LAZY)
 	@MapsId
 	@JoinColumn(name = "pessoa_id")

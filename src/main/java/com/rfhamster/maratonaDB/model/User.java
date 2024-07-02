@@ -10,6 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.rfhamster.maratonaDB.enums.FaixasEnum;
 import com.rfhamster.maratonaDB.vo.security.UserRole;
 
@@ -85,9 +86,8 @@ public class User implements UserDetails, Serializable {
 		this.pontos = pontos;
 		this.pessoa = pessoa;
 	}
-
-
-
+	
+	@JsonIgnore
 	public List<String> getRoles() {
 		List<String> roles = new ArrayList<>();
 		roles.add("ROLE_USER");
@@ -95,6 +95,7 @@ public class User implements UserDetails, Serializable {
 		return roles;
 	}
 	
+	@JsonIgnore
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		if(this.role == UserRole.ADMIN) return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"),new SimpleGrantedAuthority("ROLE_USER"));

@@ -1,5 +1,7 @@
 package com.rfhamster.maratonaDB.services;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -41,6 +43,55 @@ public class UserServices implements UserDetailsService{
 		repository.save(usuario);
 		return usuario;
 	}
+	
+	public User buscarPorId(Long id) {
+        Optional<User> usuario = repository.findById(id);
+        return usuario.orElse(null);
+    }
+	
+	public User atualizarFaixa(Long id, FaixasEnum faixa) {
+		Optional<User> userExistente = repository.findById(id);
+        if (userExistente.isPresent()) {
+        	User u = userExistente.get();
+        	u.setFaixa(faixa);
+            return repository.save(u);
+        } else {
+            return null;
+        }
+	}
+	
+	public User atualizarPontos(Long id, Long valor, Boolean adicionar) {
+		Optional<User> userExistente = repository.findById(id);
+        if (userExistente.isPresent()) {
+        	User u = userExistente.get();
+        	if(adicionar) {
+        		u.setPontos(u.getPontos() + valor);
+        	}else {
+        		u.setPontos(u.getPontos() - valor);
+        	}
+            return repository.save(u);
+        } else {
+            return null;
+        }
+	}
+	
+	public User atualizarUser(Long id, String username, String pass) {
+		Optional<User> userExistente = repository.findById(id);
+        if (userExistente.isPresent()) {
+        	User u = userExistente.get();
+        	u.setUsername(username);
+        	u.setPassword(pass);
+            return repository.save(u);
+        } else {
+            return null;
+        }
+	}
+	
+	public boolean deletar(Long id) {
+		pessoaRepository.deleteById(id);
+        repository.deleteById(id);
+		return true;
+    }
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

@@ -26,6 +26,18 @@ public class Arquivo implements Serializable{
 	
 	@Column(name = "tamanho")
 	private Long size;
+	
+	public Arquivo() {}
+	
+	public Arquivo(String fileName, String downloadUlr, String fileType, Long size) {
+		super();
+		this.fileName = fileName;
+		this.downloadUlr = downloadUlr;
+		this.fileType = fileType;
+		this.size = size;
+	}
+
+
 
 	public String getFileName() {
 		return fileName;

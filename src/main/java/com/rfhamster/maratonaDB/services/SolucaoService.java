@@ -1,10 +1,12 @@
 package com.rfhamster.maratonaDB.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.rfhamster.maratonaDB.model.Solucao;
 import com.rfhamster.maratonaDB.repositories.SolucaoRepository;
 
+@Service
 public class SolucaoService {
 	
 	@Autowired
