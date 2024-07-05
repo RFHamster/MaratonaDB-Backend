@@ -1,5 +1,7 @@
 package com.rfhamster.maratonaDB.services;
 
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -63,8 +65,13 @@ public class ArquivoService {
 		return repository.save(a);
 	}
 
-	public Arquivo buscarDatabase(String filename) {
-		Optional<Arquivo> arquivo = repository.findById(filename);
+	public Arquivo buscarById(Long id) {
+		Optional<Arquivo> arquivo = repository.findById(id);
+        return arquivo.orElse(null);
+	}
+	
+	public Arquivo buscarByFilename(String filename) {
+		Optional<Arquivo> arquivo = repository.findByFilename(filename);
         return arquivo.orElse(null);
 	}
 	
@@ -81,8 +88,38 @@ public class ArquivoService {
 			throw new MyFileNotFoundException("Arquivo nao achado: " + filename,e);
 		}
 	}
-	public boolean deletar(String id) {
-		repository.deleteById(id);
+	
+	public Resource loadFileAsResourceById(Long id) {
+		Arquivo arquivo = buscarById(id);
+		if(arquivo == null) {
+			return null;
+		}
+		return loadFileAsResource(arquivo.getFileName());
+	}
+	
+	public void deleteFile(String filename) {
+	    try {
+	        Path filePath = this.fileStorageLocation.resolve(filename).normalize();
+	        File file = filePath.toFile();
+	        if (file.exists()) {
+	            if (!file.delete()) {
+	            	throw new FileStorageException("Falha ao excluir o arquivo: " + filename);
+	            }
+	        } else {
+	            throw new MyFileNotFoundException("Arquivo não achado");
+	        }
+	    } catch (Exception e) {
+	        throw new MyFileNotFoundException("Arquivo não achado: " + filename, e);
+	    }
+	}
+	
+	public boolean deletar(Long id) {
+		Arquivo a = buscarById(id);
+		if(a == null) {
+			return false;
+		}
+		deleteFile(a.getFileName());
+		repository.delete(a);
 		return true;
 	}
 }

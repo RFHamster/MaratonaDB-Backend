@@ -5,6 +5,8 @@ import java.util.Objects;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
@@ -15,7 +17,11 @@ public class Arquivo implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
 	@Id
-	@Column(name = "nome_arquivo")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "arquivo_id")
+	private Long id;
+	
+	@Column(name = "nome_arquivo", unique=true)
 	private String fileName;
 	
 	@Column(name = "url_download")
@@ -37,7 +43,13 @@ public class Arquivo implements Serializable{
 		this.size = size;
 	}
 
+	public Long getId() {
+		return id;
+	}
 
+	public void setId(Long id) {
+		this.id = id;
+	}
 
 	public String getFileName() {
 		return fileName;
@@ -73,7 +85,7 @@ public class Arquivo implements Serializable{
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(downloadUlr, fileName, fileType, size);
+		return Objects.hash(downloadUlr, fileName, fileType, id, size);
 	}
 
 	@Override
@@ -86,6 +98,7 @@ public class Arquivo implements Serializable{
 			return false;
 		Arquivo other = (Arquivo) obj;
 		return Objects.equals(downloadUlr, other.downloadUlr) && Objects.equals(fileName, other.fileName)
-				&& Objects.equals(fileType, other.fileType) && Objects.equals(size, other.size);
+				&& Objects.equals(fileType, other.fileType) && Objects.equals(id, other.id)
+				&& Objects.equals(size, other.size);
 	}
 }

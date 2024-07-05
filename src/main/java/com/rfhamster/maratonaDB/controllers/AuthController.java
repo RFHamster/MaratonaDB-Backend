@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -54,7 +55,34 @@ public class AuthController {
 		Pessoa p = new Pessoa(data.getNomeCompleto(), data.getMatricula(), data.getCpf(), data.getRg(), data.getOrgaoEmissor(),
 				data.getTamanhoCamisa(), data.getEmail(), data.getTelefone(), data.getPrimeiraGrad(),
 				data.getDataEntrada(), null);
-		User u = service.salvarUserComum(data.getUsername(), encoder.encode(data.getPassword()), p);
+		User u;
+		try {
+			u = service.salvarUserComum(data.getUsername(), encoder.encode(data.getPassword()), p);
+			return ResponseEntity.ok(u);
+		} catch (DataIntegrityViolationException e) {
+            if (e.getMessage().contains("Duplicate entry")) {
+                if (e.getMessage().contains("for key 'users.UKr43af9ap4edm43mmtq01oddj6'")) {
+                    return ResponseEntity.status(HttpStatus.CONFLICT).body("Username already exists");
+                }
+                if (e.getMessage().contains("for key 'pessoas.UKc7pqbmo6e96slvonilywsb8oe'")) {
+                    return ResponseEntity.status(HttpStatus.CONFLICT).body("CPF already exists");
+                }
+                if (e.getMessage().contains("for key 'pessoas.UKhfwva4ba1blfdj9rrab2emdqw'")) {
+                    return ResponseEntity.status(HttpStatus.CONFLICT).body("Matricula already exists");
+                }
+                if (e.getMessage().contains("for key 'pessoas.UKggc1gmaya889fgcl2u3t2s1cw'")) {
+                    return ResponseEntity.status(HttpStatus.CONFLICT).body("RG already exists");
+                }
+            }
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while processing your request");
+        }
+		
+	}
+	
+	@PostMapping(value = "/register/adm")
+	public ResponseEntity<?> registrarUserADM(@RequestBody AccountCredentialsVO data) {
+		PasswordEncoder encoder = new BCryptPasswordEncoder();
+		User u = service.salvarUserADM(data.getUsername(), encoder.encode(data.getPassword()));
 		return ResponseEntity.ok(u);
 	}
 

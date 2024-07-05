@@ -40,7 +40,7 @@ public class Pessoa implements Serializable{
 	@Column(name = "rg", unique = true)
 	private String rg;
 	
-	@Column(name = "orgao_emissor_rg", unique = true)
+	@Column(name = "orgao_emissor_rg", unique = false)
 	private String orgaoEmissor;
 	
 	@Enumerated(EnumType.STRING)

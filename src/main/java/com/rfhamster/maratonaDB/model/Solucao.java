@@ -34,13 +34,27 @@ public class Solucao implements Serializable{
 	private Long problemaId;
 	
 	@OneToOne(fetch=FetchType.EAGER)
-	@JoinColumn(name = "solucao_id")
+	@JoinColumn(name = "solucao_id",referencedColumnName="arquivo_id")
 	private Arquivo solucao;
 	
 	@JsonIgnore
 	@ManyToOne(targetEntity=Problema.class, fetch=FetchType.EAGER)
-    @JoinColumn(name="problema", referencedColumnName="problema_id", nullable=false, insertable = false, updatable = false)
+    @JoinColumn(name="problema_id", referencedColumnName="problema_id", nullable=false, insertable = false, updatable = false)
 	private Problema problema;
+	
+	public Solucao() {
+		
+	}
+
+	public Solucao(Long id, String usuario, Long problemaId, Arquivo solucao, Problema problema) {
+		this.id = id;
+		this.usuario = usuario;
+		this.problemaId = problemaId;
+		this.solucao = solucao;
+		this.problema = problema;
+	}
+
+
 
 	public Long getId() {
 		return id;

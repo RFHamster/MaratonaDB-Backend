@@ -1,8 +1,8 @@
 package com.rfhamster.maratonaDB.vo.security;
 
 public enum UserRole {
-	ADMIN("admin"),
-	USER("user");
+	ADMIN("ADMIN"),
+	USER("USER");
 	
 	private String role;
 	

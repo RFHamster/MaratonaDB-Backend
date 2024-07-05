@@ -42,7 +42,7 @@ public class Problema implements Serializable{
 	private String assuntos;
 	
 	@OneToOne(fetch=FetchType.EAGER)
-	@JoinColumn(name = "problema_id")
+	@JoinColumn(name = "problema_id", referencedColumnName="arquivo_id")
 	private Arquivo problema;
 	
 	@OneToMany(mappedBy="problema")
@@ -50,6 +50,23 @@ public class Problema implements Serializable{
 	
 	@OneToMany(mappedBy="problema")
 	private List<Solucao> solucoes;
+	
+	public Problema() {
+		
+	}
+
+	public Problema(Long id, String usuario, String titulo, String idOriginal, String origem, String assuntos,
+			Arquivo problema, List<Dicas> dicas, List<Solucao> solucoes) {
+		this.id = id;
+		this.usuario = usuario;
+		this.titulo = titulo;
+		this.idOriginal = idOriginal;
+		this.origem = origem;
+		this.assuntos = assuntos;
+		this.problema = problema;
+		this.dicas = dicas;
+		this.solucoes = solucoes;
+	}
 
 	public Long getId() {
 		return id;

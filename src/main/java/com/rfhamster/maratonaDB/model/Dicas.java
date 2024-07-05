@@ -40,6 +40,19 @@ public class Dicas implements Serializable{
     @JoinColumn(name="problema_id", referencedColumnName="problema_id", nullable=false, insertable = false, updatable = false)
 	private Problema problema;
 
+	public Dicas () {
+	}
+	
+	public Dicas(Long id, String usuario, String conteudo, Long problemaId, Problema problema) {
+		this.id = id;
+		this.usuario = usuario;
+		this.conteudo = conteudo;
+		this.problemaId = problemaId;
+		this.problema = problema;
+	}
+
+
+
 	public Long getId() {
 		return id;
 	}

@@ -40,6 +40,21 @@ public class Report implements Serializable{
 	
 	@Column(name = "status_resolvido")
 	private Boolean resolvido;
+	
+	public Report() {
+		
+	}
+	
+	public Report(Long id, String usuario, Long id_origem, TipoENUM origem, String mensagem, Boolean resolvido) {
+		this.id = id;
+		this.usuario = usuario;
+		this.id_origem = id_origem;
+		this.origem = origem;
+		this.mensagem = mensagem;
+		this.resolvido = resolvido;
+	}
+
+
 
 	public Long getId() {
 		return id;

@@ -1,8 +1,10 @@
 package com.rfhamster.maratonaDB.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -28,21 +30,37 @@ public class UserServices implements UserDetailsService{
 		this.repository = repository;
 	}
 	
-	public User salvarUserComum(String username, String password, Pessoa p) {
-		User usuario = new User(username, password, true, true, true, true, UserRole.USER, FaixasEnum.BRANCA,0L,null);
-		if(p != null) {
-			p.setUsuario(usuario);
-			usuario.setPessoa(pessoaRepository.save(p));
+	public User salvarUserComum (String username, String password, Pessoa p) throws DataIntegrityViolationException{
+		if(p == null) {
+			return null;
 		}
+		
+		User usuario = new User(username, password, true, true, true, true, UserRole.USER, FaixasEnum.BRANCA,0L,null);
+		p.setUsuario(usuario);
+		try {
+			usuario.setPessoa(pessoaRepository.save(p));
+			return repository.save(usuario);
+		} catch (DataIntegrityViolationException  e) {
+			System.out.println(e.getMessage());
+            throw e;
+		}
+		
+		
+	}
+	
+	public User salvarUserADM(String username, String password) {
+		Pessoa p = new Pessoa();
+		User usuario = new User(username, password, true, true, true, true, UserRole.ADMIN, FaixasEnum.PRETA,0L,null);
+		p.setUsuario(usuario);
+		usuario.setPessoa(pessoaRepository.save(p));
 		repository.save(usuario);
 		return usuario;
 	}
 	
-	public User salvarUserADM(String username, String password) {
-		User usuario = new User(username, password, true, true, true, true, UserRole.ADMIN, FaixasEnum.PRETA,0L,null);
-		repository.save(usuario);
-		return usuario;
-	}
+	public List<User> buscarTodos() {
+        List<User> usuarios = repository.findAll();
+        return usuarios;
+    }
 	
 	public User buscarPorId(Long id) {
         Optional<User> usuario = repository.findById(id);
