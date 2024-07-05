@@ -43,9 +43,7 @@ public class UserServices implements UserDetailsService{
 		} catch (DataIntegrityViolationException  e) {
 			System.out.println(e.getMessage());
             throw e;
-		}
-		
-		
+		}		
 	}
 	
 	public User salvarUserADM(String username, String password) {
@@ -62,9 +60,29 @@ public class UserServices implements UserDetailsService{
         return usuarios;
     }
 	
-	public User buscarPorId(Long id) {
+	public User buscar(Long id) {
         Optional<User> usuario = repository.findById(id);
         return usuario.orElse(null);
+    }
+	
+	public User buscarCPF(String cpf) {
+        Optional<User> usuario = repository.buscarPorCpfDaPessoa(cpf);
+        return usuario.orElse(null);
+    }
+	
+	public User buscarMatricula(String matricula) {
+        Optional<User> usuario = repository.buscarPorMatriculaDaPessoa(matricula);
+        return usuario.orElse(null);
+    }
+	
+	public User buscarRG(String rg) {
+        Optional<User> usuario = repository.buscarPorRgDaPessoa(rg);
+        return usuario.orElse(null);
+    }
+	
+	public List<User> buscarTermoNomeCompleto(String termo) {
+        List<User> usuario = repository.buscarPorNomeCompletoParcial(termo);
+        return usuario;
     }
 	
 	public User atualizarFaixa(Long id, FaixasEnum faixa) {
@@ -102,6 +120,30 @@ public class UserServices implements UserDetailsService{
             return repository.save(u);
         } else {
             return null;
+        }
+	}
+	
+	public boolean desabilitarUsuario(Long id) {
+		Optional<User> userExistente = repository.findById(id);
+        if (userExistente.isPresent()) {
+        	User u = userExistente.get();
+        	u.setEnabled(false);
+        	repository.save(u);
+            return true;
+        } else {
+            return false;
+        }
+	}
+	
+	public boolean habilitarUsuario(Long id) {
+		Optional<User> userExistente = repository.findById(id);
+        if (userExistente.isPresent()) {
+        	User u = userExistente.get();
+        	u.setEnabled(true);
+        	repository.save(u);
+            return true;
+        } else {
+            return false;
         }
 	}
 	

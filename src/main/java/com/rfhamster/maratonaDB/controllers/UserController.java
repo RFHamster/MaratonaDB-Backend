@@ -43,7 +43,47 @@ public class UserController {
 	@GetMapping(path = "/{codigo}")
 	public ResponseEntity< ? > buscar(@PathVariable Long codigo) {
 		try {
-			return ResponseEntity.ok(userService.buscarPorId(codigo));
+			return ResponseEntity.ok(userService.buscar(codigo));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+		}		
+	}
+	
+	@GetMapping(path = "/cpf/{codigo}")
+	public ResponseEntity< ? > buscarCPF(@PathVariable String codigo) {
+		try {
+			return ResponseEntity.ok(userService.buscarCPF(codigo));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+		}		
+	}
+	
+	@GetMapping(path = "/rg/{codigo}")
+	public ResponseEntity< ? > buscarRG(@PathVariable String codigo) {
+		try {
+			return ResponseEntity.ok(userService.buscarRG(codigo));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+		}		
+	}
+	
+	@GetMapping(path = "/nomecompleto/termo/{codigo}")
+	public ResponseEntity< ? > buscarTermoNome(@PathVariable String codigo) {
+		try {
+			return ResponseEntity.ok(userService.buscarTermoNomeCompleto(codigo));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+		}		
+	}
+	
+	@GetMapping(path = "/matricula/{codigo}")
+	public ResponseEntity< ? > buscarMatricula(@PathVariable String codigo) {
+		try {
+			return ResponseEntity.ok(userService.buscarMatricula(codigo));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -56,11 +96,33 @@ public class UserController {
 	    	PasswordEncoder encoder = new BCryptPasswordEncoder();
 	    	//Falta Confirmar todos os dados, se nao tem repetido
 	        User usuarioAtualizado = userService.atualizarUser(codigo, data.getUsername(), encoder.encode(data.getPassword()));
-	        Pessoa p = new Pessoa(data.getNomeCompleto(),data.getMatricula(),data.getCpf(),data.getRg(),data.getOrgaoEmissor(),
+	        Pessoa p = new Pessoa(data.getNomeCompleto().toUpperCase(),data.getMatricula(),data.getCpf(),data.getRg(),data.getOrgaoEmissor(),
 	        		data.getTamanhoCamisa(), data.getEmail(),data.getTelefone(),data.getPrimeiraGrad(),data.getDataEntrada(), null);
 	        Pessoa pessoaAtualizada = pessoaService.atualizar(codigo, p);
 	        usuarioAtualizado.setPessoa(pessoaAtualizada);
 	        return ResponseEntity.ok(usuarioAtualizado);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+	    }
+	}
+	
+	@PutMapping(path = "/desabilitar/{codigo}")
+	public ResponseEntity<?> desabilitar(@PathVariable Long codigo) {
+	    try {
+	        userService.desabilitarUsuario(codigo);
+	        return ResponseEntity.noContent().build();
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+	    }
+	}
+	
+	@PutMapping(path = "/habilitar/{codigo}")
+	public ResponseEntity<?> habilitar(@PathVariable Long codigo) {
+	    try {
+	        userService.habilitarUsuario(codigo);
+	        return ResponseEntity.noContent().build();
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
