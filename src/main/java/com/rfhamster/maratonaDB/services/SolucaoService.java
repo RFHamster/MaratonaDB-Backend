@@ -17,20 +17,14 @@ public class SolucaoService {
 	@Autowired
 	SolucaoRepository repository;
 	@Autowired
-	ProblemaService problemaService;
-	@Autowired
 	UserServices userService;
 	
 	Long qntPontosProblema = 60L;
 	Long qntPontosDica = 20L;
 	Long qntPontosSolucao = 40L;
 	
-	public Solucao addSolucao(Long idProblema, String usuario, Arquivo solucao){
-		Problema p = problemaService.buscar(idProblema);
-		if(p == null) {
-			return null;
-		}
-		Solucao s = new Solucao(null, usuario, idProblema, solucao, p);
+	public Solucao addSolucao(Problema p, String usuario, Arquivo solucao){
+		Solucao s = new Solucao(null, usuario, p.getId(), solucao, p);
 		userService.atualizarPontos(p.getUsuario(), qntPontosSolucao, true);
 		return salvar(s);
 	}

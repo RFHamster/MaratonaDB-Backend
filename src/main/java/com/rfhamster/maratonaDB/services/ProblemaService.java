@@ -33,16 +33,6 @@ public class ProblemaService {
 	Long qntPontosDica = 10L;
 	Long qntPontosSolucao = 40L;
 	
-	public Problema addSolucao(Long idProlema, Solucao s){
-		return null;
-	}
-	
-	public Problema addAssunto(Long id, String novoAssunto) {
-		Problema p = buscar(id);
-		p.setAssuntos(p.getAssuntos() + "," + novoAssunto);
-		return salvar(p);
-	}
-	
 	public Problema removerAssunto(Long id, String assuntoRemover) {
 		Problema p = buscar(id);
 		String assunto = p.getAssuntos();

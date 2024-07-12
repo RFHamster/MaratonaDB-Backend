@@ -16,19 +16,13 @@ public class DicasService {
 	@Autowired
 	DicasRepository repository;
 	@Autowired
-	ProblemaService problemaService;
-	@Autowired
 	UserServices userService;
 	
 	Long qntPontosDica = 10L;
 	
-	public Dicas addDica(Long idProblema, String usuario, String conteudo){
-		Problema p = problemaService.buscar(idProblema);
-		if(p == null) {
-			return null;
-		}
+	public Dicas addDica(Problema p, String usuario, String conteudo){
 		userService.atualizarPontos(p.getUsuario(), qntPontosDica, true);
-		Dicas d = new Dicas(null, usuario, conteudo, idProblema, p);
+		Dicas d = new Dicas(null, usuario, conteudo, p.getId(), p);
 		return salvar(d);
 	}
 	
