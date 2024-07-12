@@ -33,8 +33,6 @@ public class ProblemaService {
 	Long qntPontosDica = 10L;
 	Long qntPontosSolucao = 40L;
 	
-	
-	
 	public Problema addSolucao(Long idProlema, Solucao s){
 		return null;
 	}

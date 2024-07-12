@@ -53,7 +53,7 @@ public class Problema implements Serializable{
 	private Boolean ativo;
 	
 	@OneToOne(fetch=FetchType.EAGER)
-	@JoinColumn(name = "problema_id", referencedColumnName="arquivo_id")
+	@JoinColumn(name = "arquivo_id", referencedColumnName="arquivo_id")
 	private Arquivo problema;
 	
 	@OneToMany(mappedBy="problema")
