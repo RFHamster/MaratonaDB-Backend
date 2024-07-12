@@ -5,12 +5,15 @@ import java.util.Objects;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.rfhamster.maratonaDB.enums.FaixasEnum;
+
 public class ProblemaInsertVO {
 
 	private String usuario;
 	private String titulo;
 	private String idOriginal;
 	private String origem;
+	private FaixasEnum faixa;
 	private String assuntos;
 	private MultipartFile problema;
 	private MultipartFile solucao;
@@ -21,7 +24,7 @@ public class ProblemaInsertVO {
 	}
 	
 	public ProblemaInsertVO(String usuario, String titulo, String idOriginal, String origem, String assuntos,
-			MultipartFile problema, MultipartFile solucao, List<String> conteudoDicas) {
+			MultipartFile problema, MultipartFile solucao, List<String> conteudoDicas, FaixasEnum faixa) {
 		this.usuario = usuario;
 		this.titulo = titulo;
 		this.idOriginal = idOriginal;
@@ -30,6 +33,7 @@ public class ProblemaInsertVO {
 		this.problema = problema;
 		this.solucao = solucao;
 		this.conteudoDicas = conteudoDicas;
+		this.faixa = faixa;
 	}
 	public String getUsuario() {
 		return usuario;
@@ -79,10 +83,20 @@ public class ProblemaInsertVO {
 	public void setConteudoDicas(List<String> conteudoDicas) {
 		this.conteudoDicas = conteudoDicas;
 	}
+
+	public FaixasEnum getFaixa() {
+		return faixa;
+	}
+
+	public void setFaixa(FaixasEnum faixa) {
+		this.faixa = faixa;
+	}
+
 	@Override
 	public int hashCode() {
-		return Objects.hash(assuntos, conteudoDicas, idOriginal, origem, problema, solucao, titulo, usuario);
+		return Objects.hash(assuntos, conteudoDicas, faixa, idOriginal, origem, problema, solucao, titulo, usuario);
 	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -93,10 +107,9 @@ public class ProblemaInsertVO {
 			return false;
 		ProblemaInsertVO other = (ProblemaInsertVO) obj;
 		return Objects.equals(assuntos, other.assuntos) && Objects.equals(conteudoDicas, other.conteudoDicas)
-				&& Objects.equals(idOriginal, other.idOriginal) && Objects.equals(origem, other.origem)
-				&& Objects.equals(problema, other.problema) && Objects.equals(solucao, other.solucao)
-				&& Objects.equals(titulo, other.titulo) && Objects.equals(usuario, other.usuario);
-	}
-	
-	
+				&& faixa == other.faixa && Objects.equals(idOriginal, other.idOriginal)
+				&& Objects.equals(origem, other.origem) && Objects.equals(problema, other.problema)
+				&& Objects.equals(solucao, other.solucao) && Objects.equals(titulo, other.titulo)
+				&& Objects.equals(usuario, other.usuario);
+	}	
 }

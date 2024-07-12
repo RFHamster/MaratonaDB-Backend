@@ -29,7 +29,6 @@ public class ArquivoService {
 	
 	private final Path fileStorageLocation;
 	
-	@Autowired
 	public ArquivoService(FileStorageConfig fileStorageConfig) {
 		
 		this.fileStorageLocation = Paths.get(fileStorageConfig.getUploadDir())
@@ -40,6 +39,10 @@ public class ArquivoService {
 		}catch (Exception e){
 			throw new FileStorageException("Nao conseguiu criar diretorio de arquivos de upload",e);
 		}
+	}
+	
+	public Arquivo salvar(Arquivo a) {
+		return repository.save(a);
 	}
 	
 	public Arquivo storeFile(MultipartFile file) {
@@ -57,13 +60,10 @@ public class ArquivoService {
 			throw new FileStorageException("Nao conseguiu armazenar o arquivo " + originalName,e);
 		}
 		String endpointUrl = "/donloadFile/" + uniqueName;
-		return new Arquivo(uniqueName, endpointUrl, file.getContentType(), file.getSize());
+		Arquivo a = new Arquivo(uniqueName, endpointUrl, file.getContentType(), file.getSize());
+		return salvar(a);
 	}
 	
-	public Arquivo salvar(Arquivo a) {
-		return repository.save(a);
-	}
-
 	public Arquivo buscarById(Long id) {
 		Optional<Arquivo> arquivo = repository.findById(id);
         return arquivo.orElse(null);
@@ -117,8 +117,18 @@ public class ArquivoService {
 		if(a == null) {
 			return false;
 		}
-		deleteFile(a.getFileName());
 		repository.delete(a);
+		deleteFile(a.getFileName());
+		
+		return true;
+	}
+	
+	public boolean deletar(Arquivo a) {
+		if(a == null) {
+			return false;
+		}
+		repository.delete(a);
+		deleteFile(a.getFileName());
 		return true;
 	}
 }

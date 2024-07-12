@@ -1,5 +1,8 @@
 package com.rfhamster.maratonaDB.services;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,20 +15,49 @@ public class ReportService {
 	@Autowired
 	ReportRepository repository;
 	
-	//Criar
-	public Report salvar() {
-		return null;
+
+	public Report salvar(Report r) {
+		return repository.save(r);
 	}
-	//Ler
-	public Report buscar() {
-		return null;
+
+	public Report buscar(Long id) {
+		Optional<Report> r = repository.findById(id);
+		return r.orElse(null);
 	}
-	//Atualizar
-	public Report atualizar() {
-		return null;
+	
+	public List<Report> buscarTodos() {
+		return repository.findAll();
 	}
-	//Deletar
-	public Report deletar() {
-		return null;
+
+	public Report atualizar(Long id, Report novoReport) {
+		Report r = buscar(id);
+		if(r == null) {
+			return r;
+		}
+		r.setId_origem(novoReport.getId_origem());
+		r.setMensagem(novoReport.getMensagem());
+		r.setOrigem(novoReport.getOrigem());
+		r.setResolvido(novoReport.getResolvido());
+		r.setUsuario(novoReport.getUsuario());
+		return repository.save(r);
+	}
+	
+	public Report resolverReport(Long id) {
+		Report r = buscar(id);
+		if(r == null) {
+			return r;
+		}
+		r.setResolvido(true);
+		return repository.save(r);
+	}
+	
+	public Boolean deletar(Report r) {
+		repository.delete(r);
+		return true;
+	}
+	
+	public Boolean deletar(Long id) {
+		repository.deleteById(id);
+		return true;
 	}
 }

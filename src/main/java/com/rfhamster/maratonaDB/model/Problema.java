@@ -4,8 +4,12 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
+import com.rfhamster.maratonaDB.enums.FaixasEnum;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -41,6 +45,13 @@ public class Problema implements Serializable{
 	@Column(name = "assuntos")
 	private String assuntos;
 	
+	@Enumerated(EnumType.STRING)
+	@Column(name = "nivel_faixa")
+	private FaixasEnum faixa;
+	
+	@Column(name = "ativo")
+	private Boolean ativo;
+	
 	@OneToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name = "problema_id", referencedColumnName="arquivo_id")
 	private Arquivo problema;
@@ -55,7 +66,7 @@ public class Problema implements Serializable{
 		
 	}
 
-	public Problema(Long id, String usuario, String titulo, String idOriginal, String origem, String assuntos,
+	public Problema(Long id, String usuario, String titulo, String idOriginal, String origem, String assuntos, FaixasEnum faixa,
 			Arquivo problema, List<Dicas> dicas, List<Solucao> solucoes) {
 		this.id = id;
 		this.usuario = usuario;
@@ -63,9 +74,11 @@ public class Problema implements Serializable{
 		this.idOriginal = idOriginal;
 		this.origem = origem;
 		this.assuntos = assuntos;
+		this.faixa = faixa;
 		this.problema = problema;
 		this.dicas = dicas;
 		this.solucoes = solucoes;
+		this.ativo = false;
 	}
 
 	public Long getId() {
@@ -132,9 +145,33 @@ public class Problema implements Serializable{
 		this.solucoes = solucoes;
 	}
 
+	public Boolean getAtivo() {
+		return ativo;
+	}
+
+	public void setAtivo(Boolean ativo) {
+		this.ativo = ativo;
+	}
+
+	public Arquivo getProblema() {
+		return problema;
+	}
+
+	public void setProblema(Arquivo problema) {
+		this.problema = problema;
+	}
+
+	public FaixasEnum getFaixa() {
+		return faixa;
+	}
+
+	public void setFaixa(FaixasEnum faixa) {
+		this.faixa = faixa;
+	}
+
 	@Override
 	public int hashCode() {
-		return Objects.hash(assuntos, dicas, id, idOriginal, origem, solucoes, titulo, usuario);
+		return Objects.hash(assuntos, ativo, dicas, faixa, id, idOriginal, origem, problema, solucoes, titulo, usuario);
 	}
 
 	@Override
@@ -146,11 +183,10 @@ public class Problema implements Serializable{
 		if (getClass() != obj.getClass())
 			return false;
 		Problema other = (Problema) obj;
-		return Objects.equals(assuntos, other.assuntos) && Objects.equals(dicas, other.dicas)
-				&& Objects.equals(id, other.id) && Objects.equals(idOriginal, other.idOriginal)
-				&& Objects.equals(origem, other.origem) && Objects.equals(solucoes, other.solucoes)
+		return Objects.equals(assuntos, other.assuntos) && Objects.equals(ativo, other.ativo)
+				&& Objects.equals(dicas, other.dicas) && faixa == other.faixa && Objects.equals(id, other.id)
+				&& Objects.equals(idOriginal, other.idOriginal) && Objects.equals(origem, other.origem)
+				&& Objects.equals(problema, other.problema) && Objects.equals(solucoes, other.solucoes)
 				&& Objects.equals(titulo, other.titulo) && Objects.equals(usuario, other.usuario);
 	}
-	
-	
 }

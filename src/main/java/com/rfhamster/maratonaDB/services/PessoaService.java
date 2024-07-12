@@ -14,12 +14,11 @@ public class PessoaService {
 	@Autowired
 	PessoaRepository repository;
 	
-	//Ler
     public Pessoa buscar(Long id) {
         Optional<Pessoa> pessoa = repository.findById(id);
         return pessoa.orElse(null);
     }
-	//Atualizar
+
     public Pessoa atualizar(Long id, Pessoa novaPessoa) {
         Optional<Pessoa> pessoaExistente = repository.findById(id);
         if (pessoaExistente.isPresent()) {
@@ -41,7 +40,7 @@ public class PessoaService {
             return null;
         }
     }
-	//Deletar
+
     public boolean deletar(Long id) {
         repository.deleteById(id);
 		return true;

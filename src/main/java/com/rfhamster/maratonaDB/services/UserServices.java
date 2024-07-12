@@ -75,6 +75,11 @@ public class UserServices implements UserDetailsService{
         return usuario.orElse(null);
     }
 	
+	public User buscarUsuario(String username) {
+        Optional<User> usuario = repository.findByUsernameOP(username);
+        return usuario.orElse(null);
+    }
+	
 	public User buscarRG(String rg) {
         Optional<User> usuario = repository.buscarPorRgDaPessoa(rg);
         return usuario.orElse(null);
@@ -87,64 +92,75 @@ public class UserServices implements UserDetailsService{
 	
 	public User atualizarFaixa(Long id, FaixasEnum faixa) {
 		Optional<User> userExistente = repository.findById(id);
-        if (userExistente.isPresent()) {
-        	User u = userExistente.get();
-        	u.setFaixa(faixa);
-            return repository.save(u);
-        } else {
-            return null;
-        }
+		if(!userExistente.isPresent()) {
+			return null;
+		}
+    	User u = userExistente.get();
+    	u.setFaixa(faixa);
+        return repository.save(u);
 	}
 	
 	public User atualizarPontos(Long id, Long valor, Boolean adicionar) {
 		Optional<User> userExistente = repository.findById(id);
-        if (userExistente.isPresent()) {
-        	User u = userExistente.get();
-        	if(adicionar) {
-        		u.setPontos(u.getPontos() + valor);
-        	}else {
-        		u.setPontos(u.getPontos() - valor);
-        	}
-            return repository.save(u);
-        } else {
-            return null;
-        }
+		if(!userExistente.isPresent()) {
+			return null;
+		}
+    	User u = userExistente.get();
+    	if(adicionar) {
+    		u.setPontos(u.getPontos() + valor);
+    	}else {
+    		u.setPontos(u.getPontos() - valor);
+    	}
+        return repository.save(u);
+	}
+	
+	public User atualizarPontos(String username, Long valor, Boolean adicionar) {
+		Optional<User> userExistente = repository.findByUsernameOP(username);
+		if(!userExistente.isPresent()) {
+			return null;
+		}
+    	User u = userExistente.get();
+    	if(adicionar) {
+    		u.setPontos(u.getPontos() + valor);
+    	}else {
+    		u.setPontos(u.getPontos() - valor);
+    	}
+        return repository.save(u);
 	}
 	
 	public User atualizarUser(Long id, String username, String pass) {
 		Optional<User> userExistente = repository.findById(id);
-        if (userExistente.isPresent()) {
-        	User u = userExistente.get();
-        	u.setUsername(username);
-        	u.setPassword(pass);
-            return repository.save(u);
-        } else {
-            return null;
-        }
+		if(!userExistente.isPresent()) {
+			return null;
+		}
+    	User u = userExistente.get();
+    	u.setUsername(username);
+    	u.setPassword(pass);
+        return repository.save(u);
 	}
 	
 	public boolean desabilitarUsuario(Long id) {
 		Optional<User> userExistente = repository.findById(id);
-        if (userExistente.isPresent()) {
-        	User u = userExistente.get();
-        	u.setEnabled(false);
-        	repository.save(u);
-            return true;
-        } else {
-            return false;
-        }
+		if(!userExistente.isPresent()) {
+			return false;
+		}
+    	User u = userExistente.get();
+    	u.setPontos(0L);
+    	u.setEnabled(false);
+    	repository.save(u);
+        return true;
 	}
 	
 	public boolean habilitarUsuario(Long id) {
 		Optional<User> userExistente = repository.findById(id);
-        if (userExistente.isPresent()) {
-        	User u = userExistente.get();
-        	u.setEnabled(true);
-        	repository.save(u);
-            return true;
-        } else {
-            return false;
-        }
+		if(!userExistente.isPresent()) {
+			return false;
+		}
+    	User u = userExistente.get();
+    	u.setPontos(0L);
+    	u.setEnabled(true);
+    	repository.save(u);
+        return true;
 	}
 	
 	public boolean deletar(Long id) {
