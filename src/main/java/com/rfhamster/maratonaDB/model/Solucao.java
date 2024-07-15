@@ -88,9 +88,17 @@ public class Solucao implements Serializable{
 		this.problema = problema;
 	}
 
+	public Arquivo getSolucao() {
+		return solucao;
+	}
+
+	public void setSolucao(Arquivo solucao) {
+		this.solucao = solucao;
+	}
+
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, problema, problemaId, usuario);
+		return Objects.hash(id, problema, problemaId, solucao, usuario);
 	}
 
 	@Override
@@ -103,6 +111,7 @@ public class Solucao implements Serializable{
 			return false;
 		Solucao other = (Solucao) obj;
 		return Objects.equals(id, other.id) && Objects.equals(problema, other.problema)
-				&& Objects.equals(problemaId, other.problemaId) && Objects.equals(usuario, other.usuario);
-	}		
+				&& Objects.equals(problemaId, other.problemaId) && Objects.equals(solucao, other.solucao)
+				&& Objects.equals(usuario, other.usuario);
+	}
 }

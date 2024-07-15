@@ -14,7 +14,7 @@ public class ProblemaInsertVO {
 	private String idOriginal;
 	private String origem;
 	private FaixasEnum faixa;
-	private String assuntos;
+	private List<String> assuntos;
 	private MultipartFile problema;
 	private MultipartFile solucao;
 	private List<String> conteudoDicas;
@@ -23,7 +23,7 @@ public class ProblemaInsertVO {
 		
 	}
 	
-	public ProblemaInsertVO(String usuario, String titulo, String idOriginal, String origem, String assuntos,
+	public ProblemaInsertVO(String usuario, String titulo, String idOriginal, String origem, List<String> assuntos,
 			MultipartFile problema, MultipartFile solucao, List<String> conteudoDicas, FaixasEnum faixa) {
 		this.usuario = usuario;
 		this.titulo = titulo;
@@ -59,10 +59,10 @@ public class ProblemaInsertVO {
 	public void setOrigem(String origem) {
 		this.origem = origem;
 	}
-	public String getAssuntos() {
+	public List<String> getAssuntos() {
 		return assuntos;
 	}
-	public void setAssuntos(String assuntos) {
+	public void setAssuntos(List<String> assuntos) {
 		this.assuntos = assuntos;
 	}
 	public MultipartFile getProblema() {

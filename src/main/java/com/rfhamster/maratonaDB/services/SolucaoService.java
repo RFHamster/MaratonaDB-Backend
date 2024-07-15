@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.rfhamster.maratonaDB.model.Arquivo;
 import com.rfhamster.maratonaDB.model.Problema;
@@ -18,6 +19,8 @@ public class SolucaoService {
 	SolucaoRepository repository;
 	@Autowired
 	UserServices userService;
+	@Autowired
+	ArquivoService arquivoService;
 	
 	Long qntPontosProblema = 60L;
 	Long qntPontosDica = 20L;
@@ -52,6 +55,16 @@ public class SolucaoService {
 		sol.setProblemaId(solNova.getProblemaId());
 		sol.setUsuario(solNova.getUsuario());
 		return repository.save(sol);
+	}
+	
+	public Solucao atualizar(Long id, MultipartFile file) {
+		Solucao solucaoExistente = buscar(id);
+		if(solucaoExistente == null) {
+			return null;
+		}
+		arquivoService.deletar(solucaoExistente.getSolucao());
+		solucaoExistente.setSolucao(arquivoService.storeFile(file));
+		return solucaoExistente;
 	}
 
 	public Boolean deletar(Long id) {

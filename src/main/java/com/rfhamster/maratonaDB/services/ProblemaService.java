@@ -6,13 +6,16 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.rfhamster.maratonaDB.enums.FaixasEnum;
 import com.rfhamster.maratonaDB.exceptions.FileStorageException;
 import com.rfhamster.maratonaDB.model.Arquivo;
 import com.rfhamster.maratonaDB.model.Dicas;
 import com.rfhamster.maratonaDB.model.Problema;
 import com.rfhamster.maratonaDB.model.Solucao;
 import com.rfhamster.maratonaDB.repositories.ProblemaRepository;
+import com.rfhamster.maratonaDB.vo.ProblemaAttVO;
 import com.rfhamster.maratonaDB.vo.ProblemaInsertVO;
 
 @Service
@@ -32,22 +35,6 @@ public class ProblemaService {
 	Long qntPontosProblema = 60L;
 	Long qntPontosDica = 10L;
 	Long qntPontosSolucao = 40L;
-	
-	public Problema removerAssunto(Long id, String assuntoRemover) {
-		Problema p = buscar(id);
-		String assunto = p.getAssuntos();
-		String[] assuntos = assunto.split(",");
-		String assuntoFinal = "";
-		
-		for(String s : assuntos) {
-			if(!s.equals(assunto)) {
-				assuntoFinal += s + ",";
-			}
-		}
-		assuntoFinal.subSequence(0, assuntoFinal.length()-1);
-		p.setAssuntos(assuntoFinal);
-		return salvar(p);
-	}
 
 	public Problema salvar(ProblemaInsertVO data) {
 		Arquivo arquivoProblema = null;
@@ -61,8 +48,14 @@ public class ProblemaService {
 			throw e;
 		}
 		
+		String assunto = "";
+		for(String s : data.getAssuntos()) {
+			assunto += s + ", ";
+		}
+		assunto.subSequence(0, assunto.length()-1);
+		
 		Problema p = new Problema(null, data.getUsuario(), data.getTitulo(), data.getIdOriginal(),
-				data.getOrigem(), data.getAssuntos(), data.getFaixa(), arquivoProblema, null, null);
+				data.getOrigem(), assunto, data.getFaixa(), arquivoProblema, null, null);
 		p = repository.save(p);
 		
 		
@@ -97,9 +90,64 @@ public class ProblemaService {
 		List<Problema> problema = repository.findAll();
         return problema;
 	}
+	
+	public List<Problema> buscarAtivos() {
+		List<Problema> problema = repository.buscarProblemasAtivos();
+        return problema;
+	}
+	
+	public List<Problema> buscarDesativados() {
+		List<Problema> problema = repository.buscarProblemasDesativados();
+        return problema;
+	}
+	
+	public List<Problema> buscarFaixa(FaixasEnum faixa) {
+		List<Problema> problema = repository.buscarPorFaixa(faixa);
+        return problema;
+	}
+	
+	public List<Problema> buscarOrigem(String origem) {
+		List<Problema> problema = repository.buscarPorOrigem(origem);
+        return problema;
+	}
+	
+	public List<Problema> buscarIdOrigem(String Idorigem) {
+		List<Problema> problema = repository.buscarIdOrigem(Idorigem);
+        return problema;
+	}
+	
+	public List<Problema> buscarAssunto(String assunto) {
+		List<Problema> problema = repository.buscarPorAssunto(assunto);
+        return problema;
+	}
+	
+	public List<Problema> buscarTitulo(String titulo) {
+		List<Problema> problema = repository.buscarPorTitulo(titulo);
+        return problema;
+	}
 
-	public Problema atualizar() {
-		return null;
+	public Problema atualizar(Long id, ProblemaAttVO pNovo) {
+		Problema p = buscar(id);
+		if(p == null) {
+			return null;
+		}
+		p.setAssuntos(pNovo.getAssuntos());
+		p.setUsuario(pNovo.getUsuario());
+		p.setTitulo(pNovo.getTitulo());
+		p.setFaixa(pNovo.getFaixa());
+		p.setIdOriginal(pNovo.getIdOriginal());
+		p.setOrigem(pNovo.getOrigem());
+		return salvar(p);
+	}
+	
+	public Problema atualizar(Long id, MultipartFile file) {
+		Problema p = buscar(id);
+		if(p == null) {
+			return null;
+		}
+		arquivoService.deletar(p.getProblema());
+		p.setProblema(arquivoService.storeFile(file));
+		return p;
 	}
 
 	public Boolean deletar(Long id) {
@@ -112,6 +160,36 @@ public class ProblemaService {
 			solucaoService.deletar(s);
 		}
 		repository.delete(p);
+		return true;
+	}
+	
+	public Boolean adicionarAssunto(Long id, String assuntoAdicionar) {
+		Problema p = buscar(id);
+		if(p == null) {
+			return false;
+		}
+		p.setAssuntos(p.getAssuntos() + ", " + assuntoAdicionar);
+		salvar(p);
+		return true;
+	}
+	
+	public Boolean removerAssunto(Long id, String assuntoRemover) {
+		Problema p = buscar(id);
+		if(p == null) {
+			return false;
+		}
+		String assunto = p.getAssuntos();
+		String[] assuntos = assunto.split(",");
+		String assuntoFinal = "";
+		
+		for(String s : assuntos) {
+			if(!s.equals(assunto)) {
+				assuntoFinal += s + ",";
+			}
+		}
+		assuntoFinal.subSequence(0, assuntoFinal.length()-1);
+		p.setAssuntos(assuntoFinal);
+		salvar(p);
 		return true;
 	}
 	

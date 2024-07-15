@@ -28,6 +28,15 @@ public class ReportService {
 	public List<Report> buscarTodos() {
 		return repository.findAll();
 	}
+	public List<Report> buscarResolvidos() {
+		return repository.buscarReportsResolvidos();
+	}
+	public List<Report> buscarNaoResolvidos() {
+		return repository.buscarReportsNaoResolvidos();
+	}
+	public List<Report> buscarPorUsuario(String user) {
+		return repository.buscarPorUsuario(user);
+	}
 
 	public Report atualizar(Long id, Report novoReport) {
 		Report r = buscar(id);
