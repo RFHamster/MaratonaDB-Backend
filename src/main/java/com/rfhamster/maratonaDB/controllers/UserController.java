@@ -33,7 +33,7 @@ public class UserController {
 	PessoaService pessoaService;
 	
 	//Paginacao
-	@GetMapping(value = "/")
+	@GetMapping(value = "")
 	public ResponseEntity< ? > buscarTodos() {
 		try {
 			return ResponseEntity.ok(userService.buscarTodos());
@@ -156,6 +156,20 @@ public class UserController {
             }
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while processing your request");
         }
+	}
+	
+	@PutMapping(path = "/atribuicao/{codigo}")
+	public ResponseEntity<?> atualizarAtribuicoes(@PathVariable Long codigo, @RequestBody String atribuicao) {
+	    try {
+	    	Pessoa p = pessoaService.atualizarAtribuicao(codigo, atribuicao);
+	        if(p == null) {
+	        	return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario nao encontrado");
+	        }
+	        return ResponseEntity.ok(p);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+	    }
 	}
 	
 	@PutMapping(path = "/desabilitar/{codigo}")

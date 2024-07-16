@@ -64,7 +64,7 @@ public class ArquivoService {
 		return salvar(a);
 	}
 	
-	public Arquivo buscarById(Long id) {
+	public Arquivo buscarById(String id) {
 		Optional<Arquivo> arquivo = repository.findById(id);
         return arquivo.orElse(null);
 	}
@@ -88,7 +88,7 @@ public class ArquivoService {
 		}
 	}
 	
-	public Resource loadFileAsResourceById(Long id) {
+	public Resource loadFileAsResourceById(String id) {
 		Arquivo arquivo = buscarById(id);
 		if(arquivo == null) {
 			return null;
@@ -112,7 +112,7 @@ public class ArquivoService {
 	    }
 	}
 	
-	public boolean deletar(Long id) {
+	public boolean deletar(String id) {
 		Arquivo a = buscarById(id);
 		if(a == null) {
 			return false;

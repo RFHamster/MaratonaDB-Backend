@@ -85,6 +85,21 @@ public class AuthController {
 		User u = service.salvarUserADM(data.getUsername(), encoder.encode(data.getPassword()));
 		return ResponseEntity.ok(u);
 	}
+	
+	@PutMapping(value = "/atualizar-usuario")
+	public ResponseEntity<?> atualizarUsuario(@RequestBody AccountCredentialsVO data) {
+		try {
+			PasswordEncoder encoder = new BCryptPasswordEncoder();
+			User u = service.atualizarUser(data.getUsername(), encoder.encode(data.getPassword()));
+			if(u == null) {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario nao encontrado");
+			}
+			return ResponseEntity.ok(u);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+		}	
+	}
 
 	@PostMapping(value = "/signin")
 	public ResponseEntity<?> signin(@RequestBody AccountCredentialsVO data) {

@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.rfhamster.maratonaDB.model.Arquivo;
 
-public interface ArquivoRepository extends JpaRepository<Arquivo,Long>{
+public interface ArquivoRepository extends JpaRepository<Arquivo,String>{
 	@Query("SELECT a FROM Arquivo a WHERE a.fileName =:fileName")
 	Optional<Arquivo> findByFilename(@Param("fileName") String fileName);
 }

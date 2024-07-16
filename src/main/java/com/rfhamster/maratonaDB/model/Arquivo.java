@@ -15,7 +15,7 @@ public class Arquivo implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
 	@Id
-	@Column(name = "nome_arquivo", unique=true)
+	@Column(name = "nome_arquivo")
 	private String fileName;
 	
 	@Column(name = "url_download")

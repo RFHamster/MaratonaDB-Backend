@@ -159,6 +159,7 @@ public class ProblemaService {
 		for(Solucao s : p.getSolucoes()) {
 			solucaoService.deletar(s);
 		}
+		arquivoService.deletar(p.getProblema());
 		repository.delete(p);
 		return true;
 	}

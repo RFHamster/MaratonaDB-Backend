@@ -98,6 +98,15 @@ public class UserServices implements UserDetailsService{
     	User u = userExistente.get();
     	u.setFaixa(faixa);
         return repository.save(u);
+		
+//		User userExistente;
+//		try {
+//			userExistente = buscar(id);
+//			userExistente.setFaixa(faixa);
+//	    	return repository.save(userExistente);
+//		} catch (NoSuchElementException e) {
+//			throw e;
+//		}
 	}
 	
 	public User atualizarPontos(Long id, Long valor, Boolean adicionar) {
@@ -137,6 +146,15 @@ public class UserServices implements UserDetailsService{
     	u.setUsername(username);
     	u.setPassword(pass);
         return repository.save(u);
+	}
+	
+	public User atualizarUser(String username, String pass) {
+		User userExistente = buscarUsuario(username);
+		if(userExistente == null) {
+			return null;
+		}
+		userExistente.setPassword(pass);
+        return repository.save(userExistente);
 	}
 	
 	public boolean desabilitarUsuario(Long id) {

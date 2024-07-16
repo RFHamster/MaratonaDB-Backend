@@ -45,10 +45,21 @@ public class SecurityConfig {
             .addFilterBefore(customFilter, UsernamePasswordAuthenticationFilter.class)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
+            		//Auth Controller
                     .requestMatchers(HttpMethod.POST, "/auth/signin").permitAll()
                     .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/auth/register/adm").hasRole("ADMIN")
                     .requestMatchers(HttpMethod.PUT, "/auth/refresh/**").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/auth/register/adm").hasRole("ADMIN")
+                    //Report Controller
+                    .requestMatchers(HttpMethod.GET, "/reports").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.GET, "/reports/nao-resolvidos").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.GET, "/reports/resolvidos").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.GET, "/reports/problema").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.GET, "/reports/dica").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.GET, "/reports/solucao").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.PUT, "/reports/resolver/**").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.DELETE, "/reports/**").hasRole("ADMIN")
+                    
                     .anyRequest().authenticated()
             )
             .cors(cors -> {})

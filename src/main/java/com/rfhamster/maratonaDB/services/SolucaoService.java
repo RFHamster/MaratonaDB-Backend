@@ -70,12 +70,14 @@ public class SolucaoService {
 	public Boolean deletar(Long id) {
 		Solucao s = buscar(id);
 		userService.atualizarPontos(s.getUsuario(), qntPontosSolucao, false);
+		arquivoService.deletar(s.getSolucao());
 		repository.deleteById(id);
 		return true;
 	}
 	
 	public Boolean deletar(Solucao s) {
 		userService.atualizarPontos(s.getUsuario(), qntPontosSolucao, false);
+		arquivoService.deletar(s.getSolucao());
 		repository.delete(s);
 		return true;
 	}

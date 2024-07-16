@@ -1,6 +1,7 @@
 package com.rfhamster.maratonaDB.services;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,7 @@ public class ReportService {
 
 	public Report buscar(Long id) {
 		Optional<Report> r = repository.findById(id);
-		return r.orElse(null);
+		return r.orElseThrow();
 	}
 	
 	public List<Report> buscarTodos() {
@@ -37,27 +38,39 @@ public class ReportService {
 	public List<Report> buscarPorUsuario(String user) {
 		return repository.buscarPorUsuario(user);
 	}
+	
+	public List<Report> buscarReportsProblemas() {
+		return repository.buscarReportsProblemas();
+	}
+	public List<Report> buscarReportsDicas() {
+		return repository.buscarReportsDicas();
+	}
+	public List<Report> buscarReportsSolucoes() {
+		return repository.buscarReportsSolucoes();
+	}
 
 	public Report atualizar(Long id, Report novoReport) {
-		Report r = buscar(id);
-		if(r == null) {
-			return r;
+		try {
+			Report r = buscar(id);
+			r.setId_origem(novoReport.getId_origem());
+			r.setMensagem(novoReport.getMensagem());
+			r.setOrigem(novoReport.getOrigem());
+			r.setUsuario(novoReport.getUsuario());
+			return repository.save(r);
+		} catch (NoSuchElementException e) {
+			throw e;
 		}
-		r.setId_origem(novoReport.getId_origem());
-		r.setMensagem(novoReport.getMensagem());
-		r.setOrigem(novoReport.getOrigem());
-		r.setResolvido(novoReport.getResolvido());
-		r.setUsuario(novoReport.getUsuario());
-		return repository.save(r);
+		
 	}
 	
 	public Report resolverReport(Long id) {
-		Report r = buscar(id);
-		if(r == null) {
-			return r;
+		try {
+			Report r = buscar(id);
+			r.setResolvido(true);
+			return repository.save(r);
+		} catch (NoSuchElementException e) {
+			throw e;
 		}
-		r.setResolvido(true);
-		return repository.save(r);
 	}
 	
 	public Boolean deletar(Report r) {

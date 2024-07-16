@@ -3,6 +3,7 @@ package com.rfhamster.maratonaDB.services;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.rfhamster.maratonaDB.model.Pessoa;
@@ -35,6 +36,23 @@ public class PessoaService {
             pessoa.setAtribuicao(novaPessoa.getAtribuicao());
             pessoa.setDataEntrada(novaPessoa.getDataEntrada());
             pessoa.setDataSaida(novaPessoa.getDataSaida());
+            
+            try {
+            	return repository.save(pessoa);
+    		} catch (DataIntegrityViolationException  e) {
+    			System.out.println(e.getMessage());
+                throw e;
+    		}	
+        } else {
+            return null;
+        }
+    }
+    
+    public Pessoa atualizarAtribuicao(Long id, String atribuicao) {
+        Optional<Pessoa> pessoaExistente = repository.findById(id);
+        if (pessoaExistente.isPresent()) {
+            Pessoa pessoa = pessoaExistente.get();
+            pessoa.setAtribuicao(atribuicao);
             return repository.save(pessoa);
         } else {
             return null;
