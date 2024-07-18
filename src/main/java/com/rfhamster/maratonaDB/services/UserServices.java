@@ -1,20 +1,31 @@
 package com.rfhamster.maratonaDB.services;
 
-import java.util.List;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.rfhamster.maratonaDB.controllers.UserController;
 import com.rfhamster.maratonaDB.enums.FaixasEnum;
 import com.rfhamster.maratonaDB.model.Pessoa;
 import com.rfhamster.maratonaDB.model.User;
 import com.rfhamster.maratonaDB.repositories.PessoaRepository;
 import com.rfhamster.maratonaDB.repositories.UserRepository;
+import com.rfhamster.maratonaDB.vo.CustomMapper;
+import com.rfhamster.maratonaDB.vo.UserSigninVO;
 import com.rfhamster.maratonaDB.vo.security.UserRole;
 
 @Service
@@ -25,6 +36,9 @@ public class UserServices implements UserDetailsService{
 	
 	@Autowired
 	PessoaRepository pessoaRepository;
+	
+	@Autowired
+	PagedResourcesAssembler<UserSigninVO> assembler;
 	
 	public UserServices(UserRepository repository) {
 		this.repository = repository;
@@ -55,23 +69,28 @@ public class UserServices implements UserDetailsService{
 		return usuario;
 	}
 	
-	public List<User> buscarTodos() {
-        List<User> usuarios = repository.findAll();
-        return usuarios;
+	public PagedModel<EntityModel<UserSigninVO>> buscarTodos(Pageable pageable) {
+        Page<User> usuarios = repository.findAll(pageable);
+        
+        var personVoPage = usuarios.map(p -> CustomMapper.parseObject(p, UserSigninVO.class));
+        personVoPage.map(p -> p.add(linkTo(methodOn(UserController.class).buscar(p.getKey())).withSelfRel()));
+        Link link = linkTo(methodOn(UserController.class).
+        		buscarTodos(pageable.getPageNumber(), pageable.getPageSize())).withSelfRel();
+		return assembler.toModel(personVoPage, link);
+    }
+	
+	public PagedModel<EntityModel<UserSigninVO>> buscarTermoNomeCompleto(String termo, Pageable pageable) {
+		Page<User> usuarios = repository.buscarPorNomeCompletoParcial(termo, pageable);
+		
+		var personVoPage = usuarios.map(p -> CustomMapper.parseObject(p, UserSigninVO.class));
+		personVoPage.map(p -> p.add(linkTo(methodOn(UserController.class).buscar(p.getKey())).withSelfRel()));
+		Link link = linkTo(methodOn(UserController.class).
+				buscarTermoNome(pageable.getPageNumber(), pageable.getPageSize(),termo)).withSelfRel();
+		return assembler.toModel(personVoPage, link);
     }
 	
 	public User buscar(Long id) {
         Optional<User> usuario = repository.findById(id);
-        return usuario.orElse(null);
-    }
-	
-	public User buscarCPF(String cpf) {
-        Optional<User> usuario = repository.buscarPorCpfDaPessoa(cpf);
-        return usuario.orElse(null);
-    }
-	
-	public User buscarMatricula(String matricula) {
-        Optional<User> usuario = repository.buscarPorMatriculaDaPessoa(matricula);
         return usuario.orElse(null);
     }
 	
@@ -80,14 +99,44 @@ public class UserServices implements UserDetailsService{
         return usuario.orElse(null);
     }
 	
-	public User buscarRG(String rg) {
-        Optional<User> usuario = repository.buscarPorRgDaPessoa(rg);
-        return usuario.orElse(null);
+	public UserSigninVO buscarCPF(String cpf) {
+        Optional<User> usuario = repository.buscarPorCpfDaPessoa(cpf);
+        if(!usuario.isPresent()) {
+        	return null;
+        }
+        return retornarVOcomLinkTo(usuario.get());
     }
 	
-	public List<User> buscarTermoNomeCompleto(String termo) {
-        List<User> usuario = repository.buscarPorNomeCompletoParcial(termo);
-        return usuario;
+	public UserSigninVO buscarMatricula(String matricula) {
+        Optional<User> usuario = repository.buscarPorMatriculaDaPessoa(matricula);
+        if(!usuario.isPresent()) {
+        	return null;
+        }
+        return retornarVOcomLinkTo(usuario.get());
+    }
+	
+	public UserSigninVO buscarRG(String rg) {
+        Optional<User> usuario = repository.buscarPorRgDaPessoa(rg);
+        if(!usuario.isPresent()) {
+        	return null;
+        }
+        return retornarVOcomLinkTo(usuario.get());
+    }
+	
+	public UserSigninVO buscarIdRetornoVO(Long id) {
+        Optional<User> usuario = repository.findById(id);
+        if(!usuario.isPresent()) {
+        	return null;
+        }
+        return retornarVOcomLinkTo(usuario.get());
+    }
+	
+	public UserSigninVO buscarUsuarioRetornoVO(String username) {
+        Optional<User> usuario = repository.findByUsernameOP(username);
+        if(!usuario.isPresent()) {
+        	return null;
+        }
+        return retornarVOcomLinkTo(usuario.get());
     }
 	
 	public User atualizarFaixa(Long id, FaixasEnum faixa) {
@@ -98,15 +147,6 @@ public class UserServices implements UserDetailsService{
     	User u = userExistente.get();
     	u.setFaixa(faixa);
         return repository.save(u);
-		
-//		User userExistente;
-//		try {
-//			userExistente = buscar(id);
-//			userExistente.setFaixa(faixa);
-//	    	return repository.save(userExistente);
-//		} catch (NoSuchElementException e) {
-//			throw e;
-//		}
 	}
 	
 	public User atualizarPontos(Long id, Long valor, Boolean adicionar) {
@@ -195,5 +235,11 @@ public class UserServices implements UserDetailsService{
 		} else {
 			throw new UsernameNotFoundException("Username " + username + " not found!");
 		}
+	}
+	
+	public UserSigninVO retornarVOcomLinkTo(User u) {
+		 UserSigninVO usuarioVo = CustomMapper.parseObject(u, UserSigninVO.class);
+        usuarioVo.add(linkTo(methodOn(UserController.class).buscar(usuarioVo.getKey())).withSelfRel());
+        return usuarioVo;
 	}
 }

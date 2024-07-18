@@ -1,9 +1,9 @@
 package com.rfhamster.maratonaDB.controllers;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -14,12 +14,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rfhamster.maratonaDB.model.Pessoa;
 import com.rfhamster.maratonaDB.model.User;
 import com.rfhamster.maratonaDB.services.PessoaService;
 import com.rfhamster.maratonaDB.services.UserServices;
+import com.rfhamster.maratonaDB.vo.UserSigninVO;
 import com.rfhamster.maratonaDB.vo.security.AccountSignInVO;
 
 @RestController
@@ -32,11 +34,14 @@ public class UserController {
 	@Autowired
 	PessoaService pessoaService;
 	
-	//Paginacao
 	@GetMapping(value = "")
-	public ResponseEntity< ? > buscarTodos() {
+	public ResponseEntity<?> buscarTodos(
+			@RequestParam(value = "page", defaultValue = "0") Integer page,
+			@RequestParam(value = "limit", defaultValue = "12") Integer limit
+			) {
 		try {
-			return ResponseEntity.ok(userService.buscarTodos());
+			Pageable pageable = PageRequest.of(page, limit);
+			return ResponseEntity.ok(userService.buscarTodos(pageable));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -46,7 +51,7 @@ public class UserController {
 	@GetMapping(path = "/{codigo}")
 	public ResponseEntity< ? > buscar(@PathVariable Long codigo) {
 		try {
-			User u = userService.buscar(codigo);
+			UserSigninVO u = userService.buscarIdRetornoVO(codigo);
 			if(u == null) {
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario nao encontrado");
 			}
@@ -60,7 +65,7 @@ public class UserController {
 	@GetMapping(path = "/cpf/{codigo}")
 	public ResponseEntity< ? > buscarCPF(@PathVariable String codigo) {
 		try {
-			User u = userService.buscarCPF(codigo);
+			UserSigninVO u = userService.buscarCPF(codigo);
 			if(u == null) {
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario nao encontrado");
 			}
@@ -74,7 +79,7 @@ public class UserController {
 	@GetMapping(path = "/rg/{codigo}")
 	public ResponseEntity< ? > buscarRG(@PathVariable String codigo) {
 		try {
-			User u = userService.buscarRG(codigo);
+			UserSigninVO u = userService.buscarRG(codigo);
 			if(u == null) {
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario nao encontrado");
 			}
@@ -88,7 +93,7 @@ public class UserController {
 	@GetMapping(path = "/username/{codigo}")
 	public ResponseEntity< ? > buscarUsername(@PathVariable String codigo) {
 		try {
-			User u = userService.buscarUsuario(codigo);
+			UserSigninVO u = userService.buscarUsuarioRetornoVO(codigo);
 			if(u == null) {
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario nao encontrado");
 			}
@@ -99,14 +104,14 @@ public class UserController {
 		}		
 	}
 	
-	@GetMapping(path = "/nomecompleto/termo/{codigo}")
-	public ResponseEntity< ? > buscarTermoNome(@PathVariable String codigo) {
+	@GetMapping(path = "/nome/{termo}")
+	public ResponseEntity< ? > buscarTermoNome(
+			@RequestParam(value = "page", defaultValue = "0") Integer page,
+			@RequestParam(value = "limit", defaultValue = "12") Integer limit,
+			@PathVariable String termo){
 		try {
-			List<User> u = userService.buscarTermoNomeCompleto(codigo);
-			if(u.isEmpty()) {
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nenhum usuario encontrado");
-			}
-			return ResponseEntity.ok(u);
+			Pageable pageable = PageRequest.of(page, limit);
+			return ResponseEntity.ok(userService.buscarTermoNomeCompleto(termo,pageable));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -116,7 +121,7 @@ public class UserController {
 	@GetMapping(path = "/matricula/{codigo}")
 	public ResponseEntity< ? > buscarMatricula(@PathVariable String codigo) {
 		try {
-			User u = userService.buscarMatricula(codigo);
+			UserSigninVO u = userService.buscarMatricula(codigo);
 			if(u == null) {
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario nao encontrado");
 			}

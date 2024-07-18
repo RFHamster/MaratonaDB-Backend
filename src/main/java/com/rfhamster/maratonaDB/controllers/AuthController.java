@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.rfhamster.maratonaDB.model.Pessoa;
 import com.rfhamster.maratonaDB.model.User;
-import com.rfhamster.maratonaDB.repositories.UserRepository;
 import com.rfhamster.maratonaDB.securityJwt.JwtTokenProvider;
 import com.rfhamster.maratonaDB.services.UserServices;
 import com.rfhamster.maratonaDB.vo.UserSigninVO;
@@ -42,9 +41,6 @@ public class AuthController {
 
 	@Autowired
 	private JwtTokenProvider tokenProvider;
-	
-	@Autowired
-	private UserRepository repository;
 	
 	@Autowired
 	private UserServices service;
@@ -107,7 +103,6 @@ public class AuthController {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid client request!");
 		
 		Map<String, Object> dadosAutenticacao = new HashMap<String, Object>();
-		UserSigninVO userVo;
 		try {
 			var username = data.getUsername();
 			var password = data.getPassword();
@@ -115,22 +110,24 @@ public class AuthController {
 			if(!authenticate.isAuthenticated()) {
 				return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid client request!");
 			}
-			var user = repository.findByUsername(username);
 			
-			if (user != null) {
-				Pessoa p = user.getPessoa();
-				p.setUsuario(null);
-				userVo = new UserSigninVO(user.getId(), username, user.getRole(), user.getFaixa(), user.getPontos(), p);
-				dadosAutenticacao.put("tokenResponse", tokenProvider.createAccessToken(username, user.getRoles()));
-				dadosAutenticacao.put("usuario", userVo);
-			} else {
-				throw new UsernameNotFoundException("Username " + username + " not found!");
+			UserSigninVO userVo = service.buscarUsuarioRetornoVO(username);
+			if(userVo == null) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid username/password supplied!");
 			}
+			
+			dadosAutenticacao.put("tokenResponse", tokenProvider.createAccessToken(username, userVo.getRoles()));
+			dadosAutenticacao.put("usuario", userVo);
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new BadCredentialsException("Invalid username/password supplied!");
 		}
 		return ResponseEntity.ok(dadosAutenticacao);
 	}
+	
+	
+	
+	
 	
 	@SuppressWarnings("rawtypes")
 	@PutMapping(value = "/refresh/{username}")
@@ -141,7 +138,7 @@ public class AuthController {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid client request!");
 		
 		
-		var user = repository.findByUsername(username);
+		var user = service.buscarUsuario(username);
 		
 		var tokenResponse = new TokenVO();
 		if (user != null) {

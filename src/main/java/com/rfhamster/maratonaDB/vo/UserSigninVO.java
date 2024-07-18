@@ -1,38 +1,55 @@
 package com.rfhamster.maratonaDB.vo;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
+import org.springframework.hateoas.RepresentationModel;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.rfhamster.maratonaDB.enums.FaixasEnum;
 import com.rfhamster.maratonaDB.model.Pessoa;
 import com.rfhamster.maratonaDB.vo.security.UserRole;
 
-public class UserSigninVO implements Serializable{
+public class UserSigninVO extends RepresentationModel<UserSigninVO> implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
-	private Long id;
+	private Long key;
 	private String username;
 	private UserRole role;
 	private FaixasEnum faixa;
 	private Pessoa pessoa;
 	private Long pontos;
 	
-	public UserSigninVO(Long id, String username, UserRole role, FaixasEnum faixa, Long pontos, Pessoa pessoa) {
+	public UserSigninVO() {
+		
+	}
+	
+	public UserSigninVO(Long key, String username, UserRole role, FaixasEnum faixa, Long pontos, Pessoa pessoa) {
 		super();
-		this.id = id;
+		this.key = key;
 		this.username = username;
 		this.role = role;
 		this.faixa = faixa;
 		this.pessoa = pessoa;
 		this.pontos = pontos;
 	}
-
-	public Long getId() {
-		return id;
+	
+	@JsonIgnore
+	public List<String> getRoles() {
+		List<String> roles = new ArrayList<>();
+		roles.add("ROLE_USER");
+		if(this.role == UserRole.ADMIN) roles.add("ROLE_ADMIN");
+		return roles;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public Long getKey() {
+		return key;
+	}
+
+	public void setKey(Long key) {
+		this.key = key;
 	}
 
 	public String getUsername() {
@@ -77,7 +94,7 @@ public class UserSigninVO implements Serializable{
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(faixa, id, pessoa, pontos, role, username);
+		return Objects.hash(faixa, key, pessoa, pontos, role, username);
 	}
 
 	@Override
@@ -89,7 +106,7 @@ public class UserSigninVO implements Serializable{
 		if (getClass() != obj.getClass())
 			return false;
 		UserSigninVO other = (UserSigninVO) obj;
-		return faixa == other.faixa && Objects.equals(id, other.id) && Objects.equals(pessoa, other.pessoa)
+		return faixa == other.faixa && Objects.equals(key, other.key) && Objects.equals(pessoa, other.pessoa)
 				&& Objects.equals(pontos, other.pontos) && role == other.role
 				&& Objects.equals(username, other.username);
 	}
