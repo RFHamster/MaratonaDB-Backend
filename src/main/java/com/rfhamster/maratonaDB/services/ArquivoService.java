@@ -20,6 +20,8 @@ import com.rfhamster.maratonaDB.exceptions.FileStorageException;
 import com.rfhamster.maratonaDB.exceptions.MyFileNotFoundException;
 import com.rfhamster.maratonaDB.model.Arquivo;
 import com.rfhamster.maratonaDB.repositories.ArquivoRepository;
+import com.rfhamster.maratonaDB.vo.ArquivoVO;
+import com.rfhamster.maratonaDB.vo.CustomMapper;
 
 @Service
 public class ArquivoService {
@@ -59,8 +61,7 @@ public class ArquivoService {
 		} catch (Exception e) {
 			throw new FileStorageException("Nao conseguiu armazenar o arquivo " + originalName,e);
 		}
-		String endpointUrl = "/donloadFile/" + uniqueName;
-		Arquivo a = new Arquivo(uniqueName, endpointUrl, file.getContentType(), file.getSize());
+		Arquivo a = new Arquivo(uniqueName, file.getContentType(), file.getSize());
 		return salvar(a);
 	}
 	
@@ -72,6 +73,22 @@ public class ArquivoService {
 	public Arquivo buscarByFilename(String filename) {
 		Optional<Arquivo> arquivo = repository.findByFilename(filename);
         return arquivo.orElse(null);
+	}
+	
+	public ArquivoVO buscarByIdVO(String id) {
+		Optional<Arquivo> arquivo = repository.findById(id);
+		if(!arquivo.isPresent()) {
+			return null;
+		}
+        return CustomMapper.parseObject(arquivo.get(), ArquivoVO.class);
+	}
+	
+	public ArquivoVO buscarByFilenameVO(String filename) {
+		Optional<Arquivo> arquivo = repository.findByFilename(filename);
+		if(!arquivo.isPresent()) {
+			return null;
+		}
+        return CustomMapper.parseObject(arquivo.get(), ArquivoVO.class);
 	}
 	
 	public Resource loadFileAsResource(String filename) {

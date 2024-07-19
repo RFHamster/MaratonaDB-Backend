@@ -47,6 +47,9 @@ public class AuthController {
 	
 	@PostMapping(value = "/register")
 	public ResponseEntity<?> registrarUserComum(@RequestBody AccountSignInVO data) {
+		if (checkIfParamsIsNotNull(data))
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid client request!");
+		
 		PasswordEncoder encoder = new BCryptPasswordEncoder();
 		Pessoa p = new Pessoa(data.getNomeCompleto(), data.getMatricula(), data.getCpf(), data.getRg(), data.getOrgaoEmissor(),
 				data.getTamanhoCamisa(), data.getEmail(), data.getTelefone(), data.getPrimeiraGrad(),
@@ -124,11 +127,7 @@ public class AuthController {
 		}
 		return ResponseEntity.ok(dadosAutenticacao);
 	}
-	
-	
-	
-	
-	
+
 	@SuppressWarnings("rawtypes")
 	@PutMapping(value = "/refresh/{username}")
 	public ResponseEntity refreshToken(@PathVariable("username") String username,
@@ -162,5 +161,14 @@ public class AuthController {
 	private boolean checkIfParamsIsNotNull(AccountCredentialsVO data) {
 		return data == null || data.getUsername() == null || data.getUsername().isBlank()
 				 || data.getPassword() == null || data.getPassword().isBlank();
+	}
+	
+	private boolean checkIfParamsIsNotNull(AccountSignInVO data) {
+		return data == null || data.getPassword().isBlank() || data.getUsername().isBlank()
+				 || data.getNomeCompleto().isBlank() || data.getMatricula().isBlank()
+				 || data.getCpf().isBlank() || data.getRg().isBlank()
+				 || data.getOrgaoEmissor().isBlank() || data.getTamanhoCamisa().toString() == ""
+				 || data.getEmail().isBlank() || data.getTelefone().isBlank()
+				 || data.getPrimeiraGrad() == null || data.getDataEntrada() == null;
 	}
 }

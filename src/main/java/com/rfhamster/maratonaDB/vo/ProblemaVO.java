@@ -3,27 +3,27 @@ package com.rfhamster.maratonaDB.vo;
 import java.util.List;
 import java.util.Objects;
 
-import com.rfhamster.maratonaDB.enums.FaixasEnum;
-import com.rfhamster.maratonaDB.model.Dicas;
-import com.rfhamster.maratonaDB.model.Solucao;
+import org.springframework.hateoas.RepresentationModel;
 
-public class ProblemaVO {
-	private Long id;
+import com.rfhamster.maratonaDB.enums.FaixasEnum;
+
+public class ProblemaVO extends RepresentationModel<ProblemaVO>{
+	private Long keyProblema;
 	private String usuario;
 	private String titulo;
 	private String idOriginal;
 	private String origem;
 	private String assuntos;
 	private FaixasEnum faixa;
-	private String downloadUlr;
-	private List<Dicas> dicas;
-	private List<Solucao> solucoes;
+	private ArquivoVO problema;
+	private List<DicaVO> dicas;
+	private List<SolucaoVO> solucoes;
 	
-	public Long getId() {
-		return id;
+	public Long getKeyProblema() {
+		return keyProblema;
 	}
-	public void setId(Long id) {
-		this.id = id;
+	public void setKeyProblema(Long keyProblema) {
+		this.keyProblema = keyProblema;
 	}
 	public String getUsuario() {
 		return usuario;
@@ -61,42 +61,47 @@ public class ProblemaVO {
 	public void setFaixa(FaixasEnum faixa) {
 		this.faixa = faixa;
 	}
-	public String getDownloadUlr() {
-		return downloadUlr;
-	}
-	public void setDownloadUlr(String downloadUlr) {
-		this.downloadUlr = downloadUlr;
-	}
-	public List<Dicas> getDicas() {
+	public List<DicaVO> getDicas() {
 		return dicas;
 	}
-	public void setDicas(List<Dicas> dicas) {
+	public void setDicas(List<DicaVO> dicas) {
 		this.dicas = dicas;
 	}
-	public List<Solucao> getSolucoes() {
+	public List<SolucaoVO> getSolucoes() {
 		return solucoes;
 	}
-	public void setSolucoes(List<Solucao> solucoes) {
+	public void setSolucoes(List<SolucaoVO> solucoes) {
 		this.solucoes = solucoes;
+	}
+	public ArquivoVO getProblema() {
+		return problema;
+	}
+	public void setProblema(ArquivoVO problema) {
+		this.problema = problema;
 	}
 	@Override
 	public int hashCode() {
-		return Objects.hash(assuntos, dicas, downloadUlr, faixa, id, idOriginal, origem, solucoes, titulo, usuario);
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + Objects.hash(assuntos, dicas, faixa, idOriginal, keyProblema, origem,
+				problema, solucoes, titulo, usuario);
+		return result;
 	}
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
+		if (!super.equals(obj))
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
 		ProblemaVO other = (ProblemaVO) obj;
 		return Objects.equals(assuntos, other.assuntos) && Objects.equals(dicas, other.dicas)
-				&& Objects.equals(downloadUlr, other.downloadUlr) && faixa == other.faixa
-				&& Objects.equals(id, other.id) && Objects.equals(idOriginal, other.idOriginal)
-				&& Objects.equals(origem, other.origem) && Objects.equals(solucoes, other.solucoes)
-				&& Objects.equals(titulo, other.titulo) && Objects.equals(usuario, other.usuario);
+				&& faixa == other.faixa
+				&& Objects.equals(idOriginal, other.idOriginal) && Objects.equals(keyProblema, other.keyProblema)
+				&& Objects.equals(origem, other.origem) && Objects.equals(problema, other.problema)
+				&& Objects.equals(solucoes, other.solucoes) && Objects.equals(titulo, other.titulo)
+				&& Objects.equals(usuario, other.usuario);
 	}
 	
 }

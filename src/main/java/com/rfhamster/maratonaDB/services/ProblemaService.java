@@ -1,13 +1,19 @@
 package com.rfhamster.maratonaDB.services;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.rfhamster.maratonaDB.controllers.ProblemaController;
 import com.rfhamster.maratonaDB.enums.FaixasEnum;
 import com.rfhamster.maratonaDB.exceptions.FileStorageException;
 import com.rfhamster.maratonaDB.model.Arquivo;
@@ -15,8 +21,10 @@ import com.rfhamster.maratonaDB.model.Dicas;
 import com.rfhamster.maratonaDB.model.Problema;
 import com.rfhamster.maratonaDB.model.Solucao;
 import com.rfhamster.maratonaDB.repositories.ProblemaRepository;
+import com.rfhamster.maratonaDB.vo.CustomMapper;
 import com.rfhamster.maratonaDB.vo.ProblemaAttVO;
 import com.rfhamster.maratonaDB.vo.ProblemaInsertVO;
+import com.rfhamster.maratonaDB.vo.ProblemaVO;
 
 @Service
 public class ProblemaService {
@@ -52,7 +60,7 @@ public class ProblemaService {
 		for(String s : data.getAssuntos()) {
 			assunto += s + ", ";
 		}
-		assunto.subSequence(0, assunto.length()-1);
+		assunto = assunto.substring(0, assunto.length()-2);
 		
 		Problema p = new Problema(null, data.getUsuario(), data.getTitulo(), data.getIdOriginal(),
 				data.getOrigem(), assunto, data.getFaixa(), arquivoProblema, null, null);
@@ -86,8 +94,16 @@ public class ProblemaService {
         return problema.orElse(null);
 	}
 	
-	public List<Problema> buscarTodos() {
-		List<Problema> problema = repository.findAll();
+	public ProblemaVO buscarIdRetornoVO(Long id) {
+		Optional<Problema> problema = repository.findById(id);
+        if(!problema.isPresent()) {
+        	return null;
+        }
+        return retornarVOcomLinkTo(problema.get());
+    }
+	
+	public Page<Problema> buscarTodos(Pageable pageable) {
+		Page<Problema> problema = repository.findAll(pageable);
         return problema;
 	}
 	
@@ -206,5 +222,11 @@ public class ProblemaService {
 		p.setAtivo(false);
 		userService.atualizarPontos(p.getUsuario(), qntPontosProblema - qntPontosSolucao, false);
 		return salvar(p);
+	}
+	
+	public ProblemaVO retornarVOcomLinkTo(Problema u) {
+		ProblemaVO problemaVo = CustomMapper.parseObject(u, ProblemaVO.class);
+		problemaVo.add(linkTo(methodOn(ProblemaController.class).buscar(problemaVo.getKeyProblema())).withSelfRel());
+		return problemaVo;
 	}
 }

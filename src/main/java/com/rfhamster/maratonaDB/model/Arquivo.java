@@ -18,9 +18,6 @@ public class Arquivo implements Serializable{
 	@Column(name = "nome_arquivo")
 	private String fileName;
 	
-	@Column(name = "url_download")
-	private String downloadUlr;
-	
 	@Column(name = "tipo_arquivo")
 	private String fileType;
 	
@@ -29,9 +26,8 @@ public class Arquivo implements Serializable{
 	
 	public Arquivo() {}
 	
-	public Arquivo(String fileName, String downloadUlr, String fileType, Long size) {
+	public Arquivo(String fileName, String fileType, Long size) {
 		this.fileName = fileName;
-		this.downloadUlr = downloadUlr;
 		this.fileType = fileType;
 		this.size = size;
 	}
@@ -42,14 +38,6 @@ public class Arquivo implements Serializable{
 
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
-	}
-
-	public String getDownloadUlr() {
-		return downloadUlr;
-	}
-
-	public void setDownloadUlr(String downloadUlr) {
-		this.downloadUlr = downloadUlr;
 	}
 
 	public String getFileType() {
@@ -70,7 +58,7 @@ public class Arquivo implements Serializable{
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(downloadUlr, fileName, fileType, size);
+		return Objects.hash(fileName, fileType, size);
 	}
 
 	@Override
@@ -82,7 +70,7 @@ public class Arquivo implements Serializable{
 		if (getClass() != obj.getClass())
 			return false;
 		Arquivo other = (Arquivo) obj;
-		return Objects.equals(downloadUlr, other.downloadUlr) && Objects.equals(fileName, other.fileName)
+		return Objects.equals(fileName, other.fileName)
 				&& Objects.equals(fileType, other.fileType) && Objects.equals(size, other.size);
 	}
 }

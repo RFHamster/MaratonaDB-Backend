@@ -34,7 +34,7 @@ public class Solucao implements Serializable{
 	private Long problemaId;
 	
 	@OneToOne(fetch=FetchType.EAGER)
-	@JoinColumn(name = "solucao_id",referencedColumnName="arquivo_id")
+	@JoinColumn(name = "arquivo_id",referencedColumnName="nome_arquivo")
 	private Arquivo solucao;
 	
 	@JsonIgnore

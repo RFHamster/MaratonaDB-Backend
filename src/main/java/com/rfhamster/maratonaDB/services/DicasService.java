@@ -9,21 +9,27 @@ import org.springframework.stereotype.Service;
 import com.rfhamster.maratonaDB.model.Dicas;
 import com.rfhamster.maratonaDB.model.Problema;
 import com.rfhamster.maratonaDB.repositories.DicasRepository;
+import com.rfhamster.maratonaDB.repositories.ProblemaRepository;
 
 @Service
 public class DicasService {
 	
 	@Autowired
 	DicasRepository repository;
+	
+	@Autowired
+	ProblemaRepository problemaRepository;
+	
 	@Autowired
 	UserServices userService;
 	
 	Long qntPontosDica = 10L;
 	
-	public Dicas addDica(Problema p, String usuario, String conteudo){
-		userService.atualizarPontos(p.getUsuario(), qntPontosDica, true);
-		Dicas d = new Dicas(null, usuario, conteudo, p.getId(), p);
-		return salvar(d);
+	public Dicas addDica(Long problemaId, String usuario, String conteudo){
+		userService.atualizarPontos(usuario, qntPontosDica, true);
+		Optional<Problema> p = problemaRepository.findById(problemaId);
+		Problema problema = p.orElseThrow();
+		return salvar(new Dicas(null, usuario, conteudo, problemaId, problema));
 	}
 	
 	public Dicas salvar(Dicas d) {
