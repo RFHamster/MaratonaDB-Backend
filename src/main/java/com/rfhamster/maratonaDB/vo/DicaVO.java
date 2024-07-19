@@ -9,6 +9,7 @@ import org.springframework.hateoas.RepresentationModel;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.rfhamster.maratonaDB.controllers.DicaController;
+import com.rfhamster.maratonaDB.controllers.ProblemaController;
 import com.rfhamster.maratonaDB.model.Problema;
 
 public class DicaVO extends RepresentationModel<DicaVO>{
@@ -33,6 +34,7 @@ public class DicaVO extends RepresentationModel<DicaVO>{
 	}
 	public void setKeyDica(Long keyDica) {
 		this.keyDica = keyDica;
+		this.add(linkTo(methodOn(DicaController.class).buscar(keyDica)).withSelfRel());
 	}
 	public String getUsuario() {
 		return usuario;
@@ -54,7 +56,7 @@ public class DicaVO extends RepresentationModel<DicaVO>{
 		adicionarLinkToProblema(problema.getId());
 	}
 	public void adicionarLinkToProblema(Long keyDica) {
-		this.add(linkTo(methodOn(DicaController.class).buscar(keyDica)).withRel("problema"));
+		this.add(linkTo(methodOn(ProblemaController.class).buscar(keyDica)).withRel("problema"));
 	}
 	@Override
 	public int hashCode() {

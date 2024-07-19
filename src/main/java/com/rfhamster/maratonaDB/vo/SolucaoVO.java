@@ -8,6 +8,7 @@ import java.util.Objects;
 import org.springframework.hateoas.RepresentationModel;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.rfhamster.maratonaDB.controllers.ProblemaController;
 import com.rfhamster.maratonaDB.controllers.SolucaoController;
 import com.rfhamster.maratonaDB.model.Problema;
 
@@ -30,6 +31,7 @@ public class SolucaoVO extends RepresentationModel<SolucaoVO>{
 	}
 	public void setKeySolucao(Long keySolucao) {
 		this.keySolucao = keySolucao;
+		this.add(linkTo(methodOn(SolucaoController.class).buscar(keySolucao)).withSelfRel());
 	}
 	public String getUsuario() {
 		return usuario;
@@ -52,7 +54,7 @@ public class SolucaoVO extends RepresentationModel<SolucaoVO>{
 		adicionarLinkToProblema(problema.getId());
 	}
 	public void adicionarLinkToProblema(Long keySolucao) {
-		this.add(linkTo(methodOn(SolucaoController.class).buscar(keySolucao)).withRel("problema"));
+		this.add(linkTo(methodOn(ProblemaController.class).buscar(keySolucao)).withRel("problema"));
 	}
 	@Override
 	public int hashCode() {

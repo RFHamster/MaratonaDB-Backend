@@ -50,6 +50,9 @@ public class UserController {
 	
 	@GetMapping(path = "/{codigo}")
 	public ResponseEntity< ? > buscar(@PathVariable Long codigo) {
+		if(codigo == null) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Usuario nao encontrado");
+		}
 		try {
 			UserSigninVO u = userService.buscarIdRetornoVO(codigo);
 			if(u == null) {
@@ -64,6 +67,9 @@ public class UserController {
 	
 	@GetMapping(path = "/cpf/{codigo}")
 	public ResponseEntity< ? > buscarCPF(@PathVariable String codigo) {
+		if(codigo == null) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Usuario nao encontrado");
+		}
 		try {
 			UserSigninVO u = userService.buscarCPF(codigo);
 			if(u == null) {
@@ -78,6 +84,9 @@ public class UserController {
 	
 	@GetMapping(path = "/rg/{codigo}")
 	public ResponseEntity< ? > buscarRG(@PathVariable String codigo) {
+		if(codigo == null) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Usuario nao encontrado");
+		}
 		try {
 			UserSigninVO u = userService.buscarRG(codigo);
 			if(u == null) {
@@ -92,6 +101,9 @@ public class UserController {
 	
 	@GetMapping(path = "/username/{codigo}")
 	public ResponseEntity< ? > buscarUsername(@PathVariable String codigo) {
+		if(codigo == null) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Usuario nao encontrado");
+		}
 		try {
 			UserSigninVO u = userService.buscarUsuarioRetornoVO(codigo);
 			if(u == null) {
@@ -109,6 +121,9 @@ public class UserController {
 			@RequestParam(value = "page", defaultValue = "0") Integer page,
 			@RequestParam(value = "limit", defaultValue = "12") Integer limit,
 			@PathVariable String termo){
+		if(termo.isBlank()) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Usuario nao encontrado");
+		}
 		try {
 			Pageable pageable = PageRequest.of(page, limit);
 			return ResponseEntity.ok(userService.buscarTermoNomeCompleto(termo,pageable));
@@ -120,6 +135,9 @@ public class UserController {
 	
 	@GetMapping(path = "/matricula/{codigo}")
 	public ResponseEntity< ? > buscarMatricula(@PathVariable String codigo) {
+		if(codigo == null) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Usuario nao encontrado");
+		}
 		try {
 			UserSigninVO u = userService.buscarMatricula(codigo);
 			if(u == null) {
@@ -134,6 +152,9 @@ public class UserController {
 	
 	@PutMapping(path = "/{codigo}")
 	public ResponseEntity<?> atualizar(@PathVariable Long codigo, @RequestBody AccountSignInVO data) {
+		if(codigo == null) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Usuario nao encontrado");
+		}
 		PasswordEncoder encoder = new BCryptPasswordEncoder();
 		Pessoa p = new Pessoa(data.getNomeCompleto().toUpperCase(),data.getMatricula(),data.getCpf(),data.getRg(),data.getOrgaoEmissor(),
         		data.getTamanhoCamisa(), data.getEmail(),data.getTelefone(),data.getPrimeiraGrad(),data.getDataEntrada(), null);
@@ -165,6 +186,9 @@ public class UserController {
 	
 	@PutMapping(path = "/atribuicao/{codigo}")
 	public ResponseEntity<?> atualizarAtribuicoes(@PathVariable Long codigo, @RequestBody String atribuicao) {
+		if(codigo == null) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Usuario nao encontrado");
+		}
 	    try {
 	    	Pessoa p = pessoaService.atualizarAtribuicao(codigo, atribuicao);
 	        if(p == null) {
@@ -179,6 +203,9 @@ public class UserController {
 	
 	@PutMapping(path = "/desabilitar/{codigo}")
 	public ResponseEntity<?> desabilitar(@PathVariable Long codigo) {
+		if(codigo == null) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Usuario nao encontrado");
+		}
 	    try {
 	        userService.desabilitarUsuario(codigo);
 	        return ResponseEntity.noContent().build();
@@ -190,6 +217,9 @@ public class UserController {
 	
 	@PutMapping(path = "/habilitar/{codigo}")
 	public ResponseEntity<?> habilitar(@PathVariable Long codigo) {
+		if(codigo == null) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Usuario nao encontrado");
+		}
 	    try {
 	        userService.habilitarUsuario(codigo);
 	        return ResponseEntity.noContent().build();
@@ -201,6 +231,9 @@ public class UserController {
 	
 	@DeleteMapping(path = "/{codigo}")
 	public ResponseEntity<?> deletar(@PathVariable Long codigo) {
+		if(codigo == null) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Usuario nao encontrado");
+		}
 	    try {
 	        userService.deletar(codigo);
 	        return ResponseEntity.noContent().build();

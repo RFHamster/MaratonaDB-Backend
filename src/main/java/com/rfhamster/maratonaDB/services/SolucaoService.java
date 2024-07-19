@@ -16,13 +16,14 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.rfhamster.maratonaDB.controllers.UserController;
+import com.rfhamster.maratonaDB.controllers.SolucaoController;
 import com.rfhamster.maratonaDB.model.Arquivo;
 import com.rfhamster.maratonaDB.model.Problema;
 import com.rfhamster.maratonaDB.model.Solucao;
 import com.rfhamster.maratonaDB.repositories.ProblemaRepository;
 import com.rfhamster.maratonaDB.repositories.SolucaoRepository;
 import com.rfhamster.maratonaDB.vo.CustomMapper;
+import com.rfhamster.maratonaDB.vo.SolucaoInVO;
 import com.rfhamster.maratonaDB.vo.SolucaoVO;
 
 @Service
@@ -43,13 +44,14 @@ public class SolucaoService {
 	Long qntPontosDica = 20L;
 	Long qntPontosSolucao = 40L;
 	
-	public Solucao addSolucao(Long problemaId, String usuario, MultipartFile file){
-		Arquivo solucao = arquivoService.storeFile(file);
-		Optional<Problema> p = problemaRepository.findById(problemaId);
+	public SolucaoVO addSolucao(SolucaoInVO sol){
+		Optional<Problema> p = problemaRepository.findById(sol.getProblemaId());
 		Problema problema = p.orElseThrow();
-		Solucao s = new Solucao(null, usuario, problemaId, solucao, problema);
-		userService.atualizarPontos(usuario, qntPontosSolucao, true);
-		return salvar(s);
+		Arquivo solucao = arquivoService.storeFile(sol.getFile());
+		Solucao s = salvar(new Solucao(null, sol.getUsuario(), sol.getProblemaId(), solucao, problema));
+		userService.atualizarPontos(sol.getUsuario(), qntPontosSolucao, true);
+		
+		return CustomMapper.parseObject(s, SolucaoVO.class);
 	}
 	
 	public Solucao salvar(Solucao s) {
@@ -64,8 +66,7 @@ public class SolucaoService {
         Page<Solucao> solucoes = repository.findAll(pageable);
         
         var VoPage = solucoes.map(p -> CustomMapper.parseObject(p, SolucaoVO.class));
-        VoPage.map(p -> p.add(linkTo(methodOn(UserController.class).buscar(p.getKeySolucao())).withSelfRel()));
-        Link link = linkTo(methodOn(UserController.class).
+        Link link = linkTo(methodOn(SolucaoController.class).
         		buscarTodos(pageable.getPageNumber(), pageable.getPageSize())).withSelfRel();
 		return assembler.toModel(VoPage, link);
     }
@@ -73,6 +74,14 @@ public class SolucaoService {
 	public Solucao buscar(Long id) {
 		Optional<Solucao> s = repository.findById(id);
 		return s.orElse(null);
+	}
+	
+	public SolucaoVO buscarRetornoVO(Long id) {
+		Optional<Solucao> s = repository.findById(id);
+        if(!s.isPresent()) {
+        	return null;
+        }
+        return CustomMapper.parseObject(s, SolucaoVO.class);
 	}
 
 	public Solucao atualizar(Long id, Solucao solNova) {
