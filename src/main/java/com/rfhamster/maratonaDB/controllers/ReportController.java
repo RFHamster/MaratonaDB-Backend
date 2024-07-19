@@ -3,6 +3,8 @@ package com.rfhamster.maratonaDB.controllers;
 import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rfhamster.maratonaDB.enums.TipoENUM;
@@ -70,9 +73,12 @@ public class ReportController {
 	}
 	
 	@GetMapping(value = "")
-	public ResponseEntity< ? > buscarTodos() {
+	public ResponseEntity< ? > buscarTodos(
+			@RequestParam(value = "page", defaultValue = "0") Integer page,
+			@RequestParam(value = "limit", defaultValue = "12") Integer limit) {
 		try {
-			return ResponseEntity.ok(reportService.buscarTodos());
+			Pageable pageable = PageRequest.of(page, limit);
+			return ResponseEntity.ok(reportService.buscarTodos(pageable));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -80,9 +86,11 @@ public class ReportController {
 	}
 	
 	@GetMapping(value = "/resolvidos")
-	public ResponseEntity< ? > buscarTodosResolvidos() {
+	public ResponseEntity< ? > buscarTodosResolvidos(@RequestParam(value = "page", defaultValue = "0") Integer page,
+			@RequestParam(value = "limit", defaultValue = "12") Integer limit) {
 		try {
-			return ResponseEntity.ok(reportService.buscarResolvidos());
+			Pageable pageable = PageRequest.of(page, limit);
+			return ResponseEntity.ok(reportService.buscarResolvidos(pageable));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -90,9 +98,11 @@ public class ReportController {
 	}
 	
 	@GetMapping(value = "/nao-resolvidos")
-	public ResponseEntity< ? > buscarTodosNaoResolvidos() {
+	public ResponseEntity< ? > buscarTodosNaoResolvidos(@RequestParam(value = "page", defaultValue = "0") Integer page,
+			@RequestParam(value = "limit", defaultValue = "12") Integer limit) {
 		try {
-			return ResponseEntity.ok(reportService.buscarNaoResolvidos());
+			Pageable pageable = PageRequest.of(page, limit);
+			return ResponseEntity.ok(reportService.buscarNaoResolvidos(pageable));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -100,9 +110,12 @@ public class ReportController {
 	}
 	
 	@GetMapping(value = "/usuario/{username}")
-	public ResponseEntity< ? > buscarTodosUsuario(@PathVariable("username") String username) {
+	public ResponseEntity< ? > buscarTodosUsuario(@PathVariable("username") String username,
+			@RequestParam(value = "page", defaultValue = "0") Integer page,
+			@RequestParam(value = "limit", defaultValue = "12") Integer limit) {
 		try {
-			return ResponseEntity.ok(reportService.buscarPorUsuario(username));
+			Pageable pageable = PageRequest.of(page, limit);
+			return ResponseEntity.ok(reportService.buscarPorUsuario(username,pageable));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -124,9 +137,11 @@ public class ReportController {
 	}
 	
 	@GetMapping(value = "/problema")
-	public ResponseEntity<?> buscarReportProblema() {
+	public ResponseEntity<?> buscarReportProblema(@RequestParam(value = "page", defaultValue = "0") Integer page,
+			@RequestParam(value = "limit", defaultValue = "12") Integer limit) {
 		try {
-			return ResponseEntity.ok(reportService.buscarReportsProblemas());
+			Pageable pageable = PageRequest.of(page, limit);
+			return ResponseEntity.ok(reportService.buscarReportsProblemas(pageable));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -134,9 +149,11 @@ public class ReportController {
 	}
 	
 	@GetMapping(value = "/dica")
-	public ResponseEntity<?> buscarReportDica() {
+	public ResponseEntity<?> buscarReportDica(@RequestParam(value = "page", defaultValue = "0") Integer page,
+			@RequestParam(value = "limit", defaultValue = "12") Integer limit) {
 		try {
-			return ResponseEntity.ok(reportService.buscarReportsDicas());
+			Pageable pageable = PageRequest.of(page, limit);
+			return ResponseEntity.ok(reportService.buscarReportsDicas(pageable));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -144,9 +161,50 @@ public class ReportController {
 	}
 	
 	@GetMapping(value = "/solucao")
-	public ResponseEntity<?> buscarReportSolucao() {
+	public ResponseEntity<?> buscarReportSolucao(@RequestParam(value = "page", defaultValue = "0") Integer page,
+			@RequestParam(value = "limit", defaultValue = "12") Integer limit) {
 		try {
-			return ResponseEntity.ok(reportService.buscarReportsSolucoes());
+			Pageable pageable = PageRequest.of(page, limit);
+			return ResponseEntity.ok(reportService.buscarReportsSolucoes(pageable));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+		}
+	}
+	
+	@GetMapping(value = "/problema/{codigo}")
+	public ResponseEntity<?> buscarReportProblema(@PathVariable Long codigo,
+			@RequestParam(value = "page", defaultValue = "0") Integer page,
+			@RequestParam(value = "limit", defaultValue = "12") Integer limit) {
+		try {
+			Pageable pageable = PageRequest.of(page, limit);
+			return ResponseEntity.ok(reportService.buscarReportsProblemasId(codigo,pageable));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+		}		
+	}
+	
+	@GetMapping(value = "/dica/{codigo}")
+	public ResponseEntity<?> buscarReportDica(@PathVariable Long codigo,
+			@RequestParam(value = "page", defaultValue = "0") Integer page,
+			@RequestParam(value = "limit", defaultValue = "12") Integer limit) {
+		try {
+			Pageable pageable = PageRequest.of(page, limit);
+			return ResponseEntity.ok(reportService.buscarReportsDicasId(codigo,pageable));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+		}
+	}
+	
+	@GetMapping(value = "/solucao/{codigo}")
+	public ResponseEntity<?> buscarReportSolucao(@PathVariable Long codigo,
+			@RequestParam(value = "page", defaultValue = "0") Integer page,
+			@RequestParam(value = "limit", defaultValue = "12") Integer limit) {
+		try {
+			Pageable pageable = PageRequest.of(page, limit);
+			return ResponseEntity.ok(reportService.buscarReportsSolucoesId(codigo,pageable));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());

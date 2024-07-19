@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,7 +44,7 @@ public class ProblemaController {
 		try {
 			ProblemaVO p = service.buscarIdRetornoVO(codigo);
 			if(p == null) {
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario nao encontrado");
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Problema nao encontrado");
 			}
 			return ResponseEntity.ok(p);
 		} catch (Exception e) {
@@ -63,6 +64,21 @@ public class ProblemaController {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
 		}
+	}
+	
+	
+	@DeleteMapping(path = "/{codigo}")
+	public ResponseEntity<?> deletar(@PathVariable Long codigo) {
+		if(codigo == null) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Codigo nao encontrado");
+		}
+	    try {
+	        service.deletar(codigo);
+	        return ResponseEntity.noContent().build();
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+	    }
 	}
 	
 	private boolean checkIfParamsIsNotNull(ProblemaInsertVO data) {

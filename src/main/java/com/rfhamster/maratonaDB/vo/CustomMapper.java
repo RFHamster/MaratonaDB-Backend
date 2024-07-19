@@ -7,6 +7,7 @@ import org.modelmapper.ModelMapper;
 
 import com.rfhamster.maratonaDB.model.Dicas;
 import com.rfhamster.maratonaDB.model.Problema;
+import com.rfhamster.maratonaDB.model.Report;
 import com.rfhamster.maratonaDB.model.Solucao;
 import com.rfhamster.maratonaDB.model.User;
 
@@ -37,6 +38,12 @@ public class CustomMapper {
 		
 		mapper.createTypeMap(ProblemaVO.class, Problema.class)
 		.addMapping(ProblemaVO::getKeyProblema, Problema::setId);
+		
+		mapper.createTypeMap(Report.class, ReportVO.class)
+		.addMapping(Report::getId, ReportVO::setKeyReport);
+		
+		mapper.createTypeMap(ReportVO.class, Report.class)
+		.addMapping(ReportVO::getKeyReport, Report::setId);
 	}
 	
 	public static <O, D> D parseObject(O origin, Class<D> destination) {

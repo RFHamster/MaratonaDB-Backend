@@ -168,6 +168,9 @@ public class ProblemaService {
 
 	public Boolean deletar(Long id) {
 		Problema p = buscar(id);
+		if(p == null) {
+			return false;
+		}
 		userService.atualizarPontos(p.getUsuario(), qntPontosProblema, false);
 		for(Dicas d : p.getDicas()) {
 			dicaService.deletar(d);
@@ -175,8 +178,8 @@ public class ProblemaService {
 		for(Solucao s : p.getSolucoes()) {
 			solucaoService.deletar(s);
 		}
-		arquivoService.deletar(p.getProblema());
 		repository.delete(p);
+		arquivoService.deletar(p.getProblema());
 		return true;
 	}
 	

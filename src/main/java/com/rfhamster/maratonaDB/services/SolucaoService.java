@@ -1,6 +1,7 @@
 package com.rfhamster.maratonaDB.services;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.util.List;
@@ -116,8 +117,8 @@ public class SolucaoService {
 	
 	public Boolean deletar(Solucao s) {
 		userService.atualizarPontos(s.getUsuario(), qntPontosSolucao, false);
-		arquivoService.deletar(s.getSolucao());
 		repository.delete(s);
+		arquivoService.deletar(s.getSolucao());
 		return true;
 	}
 }

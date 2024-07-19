@@ -2,10 +2,12 @@ package com.rfhamster.maratonaDB.vo;
 
 import java.util.Objects;
 
+import org.springframework.hateoas.RepresentationModel;
+
 import com.rfhamster.maratonaDB.enums.TipoENUM;
 
-public class ReportVO {
-	
+public class ReportVO extends RepresentationModel<SolucaoVO>{
+	private Long keyReport;
 	private String usuario;
 	private Long id_origem;
 	private TipoENUM origem;
@@ -35,22 +37,30 @@ public class ReportVO {
 	public void setMensagem(String mensagem) {
 		this.mensagem = mensagem;
 	}
+	public Long getKeyReport() {
+		return keyReport;
+	}
+	public void setKeyReport(Long keyReport) {
+		this.keyReport = keyReport;
+	}
 	@Override
 	public int hashCode() {
-		return Objects.hash(id_origem, mensagem, origem, usuario);
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + Objects.hash(id_origem, keyReport, mensagem, origem, usuario);
+		return result;
 	}
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
+		if (!super.equals(obj))
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
 		ReportVO other = (ReportVO) obj;
-		return Objects.equals(id_origem, other.id_origem) && Objects.equals(mensagem, other.mensagem)
-				&& origem == other.origem && Objects.equals(usuario, other.usuario);
+		return Objects.equals(id_origem, other.id_origem) && Objects.equals(keyReport, other.keyReport)
+				&& Objects.equals(mensagem, other.mensagem) && origem == other.origem
+				&& Objects.equals(usuario, other.usuario);
 	}
-	
-	
 }	
