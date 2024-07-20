@@ -10,6 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -184,7 +185,7 @@ public class UserController {
         }
 	}
 	
-	@PutMapping(path = "/atribuicao/{codigo}")
+	@PatchMapping(path = "/atribuicao/{codigo}")
 	public ResponseEntity<?> atualizarAtribuicoes(@PathVariable Long codigo, @RequestBody String atribuicao) {
 		if(codigo == null) {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Usuario nao encontrado");
@@ -201,7 +202,7 @@ public class UserController {
 	    }
 	}
 	
-	@PutMapping(path = "/desabilitar/{codigo}")
+	@PatchMapping(path = "/desabilitar/{codigo}")
 	public ResponseEntity<?> desabilitar(@PathVariable Long codigo) {
 		if(codigo == null) {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Usuario nao encontrado");
@@ -215,7 +216,7 @@ public class UserController {
 	    }
 	}
 	
-	@PutMapping(path = "/habilitar/{codigo}")
+	@PatchMapping(path = "/habilitar/{codigo}")
 	public ResponseEntity<?> habilitar(@PathVariable Long codigo) {
 		if(codigo == null) {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Usuario nao encontrado");

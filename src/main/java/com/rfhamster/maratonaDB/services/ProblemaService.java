@@ -10,6 +10,10 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,6 +43,8 @@ public class ProblemaService {
 	UserServices userService;
 	@Autowired
 	DicasService dicaService;
+	@Autowired
+	PagedResourcesAssembler<ProblemaVO> assembler;
 	
 	Long qntPontosProblema = 60L;
 	Long qntPontosDica = 10L;
@@ -102,47 +108,79 @@ public class ProblemaService {
         return retornarVOcomLinkTo(problema.get());
     }
 	
-	public Page<Problema> buscarTodos(Pageable pageable) {
+	public PagedModel<EntityModel<ProblemaVO>> buscarTodos(Pageable pageable) {
 		Page<Problema> problema = repository.findAll(pageable);
-        return problema;
+		Page<ProblemaVO> VoPage = problema.map(this::retornarVOcomLinkTo);
+		
+        Link link = linkTo(methodOn(ProblemaController.class).
+        		buscarTodos(pageable.getPageNumber(), pageable.getPageSize())).withSelfRel();
+		return assembler.toModel(VoPage,link);
 	}
 	
-	public List<Problema> buscarAtivos() {
-		List<Problema> problema = repository.buscarProblemasAtivos();
-        return problema;
+	public PagedModel<EntityModel<ProblemaVO>> buscarAtivos(Pageable pageable) {
+		Page<Problema> problema = repository.buscarProblemasAtivos(pageable);
+		Page<ProblemaVO> VoPage = problema.map(this::retornarVOcomLinkTo);
+		
+        Link link = linkTo(methodOn(ProblemaController.class).
+        		buscarTodos(pageable.getPageNumber(), pageable.getPageSize())).withSelfRel();
+		return assembler.toModel(VoPage,link);
 	}
 	
-	public List<Problema> buscarDesativados() {
-		List<Problema> problema = repository.buscarProblemasDesativados();
-        return problema;
+	public PagedModel<EntityModel<ProblemaVO>> buscarDesativados(Pageable pageable) {
+		Page<Problema> problema = repository.buscarProblemasDesativados(pageable);
+		Page<ProblemaVO> VoPage = problema.map(this::retornarVOcomLinkTo);
+		
+        Link link = linkTo(methodOn(ProblemaController.class).
+        		buscarTodos(pageable.getPageNumber(), pageable.getPageSize())).withSelfRel();
+		return assembler.toModel(VoPage,link);
 	}
 	
-	public List<Problema> buscarFaixa(FaixasEnum faixa) {
-		List<Problema> problema = repository.buscarPorFaixa(faixa);
-        return problema;
+	public PagedModel<EntityModel<ProblemaVO>> buscarFaixa(FaixasEnum faixa, Pageable pageable) {
+		Page<Problema> problema = repository.buscarPorFaixa(faixa,pageable);
+		Page<ProblemaVO> VoPage = problema.map(this::retornarVOcomLinkTo);
+		
+        Link link = linkTo(methodOn(ProblemaController.class).
+        		buscarTodos(pageable.getPageNumber(), pageable.getPageSize())).withSelfRel();
+		return assembler.toModel(VoPage,link);
 	}
 	
-	public List<Problema> buscarOrigem(String origem) {
-		List<Problema> problema = repository.buscarPorOrigem(origem);
-        return problema;
+	public PagedModel<EntityModel<ProblemaVO>> buscarOrigem(String origem, Pageable pageable) {
+		Page<Problema> problema = repository.buscarPorOrigem(origem,pageable);
+		Page<ProblemaVO> VoPage = problema.map(this::retornarVOcomLinkTo);
+		
+        Link link = linkTo(methodOn(ProblemaController.class).
+        		buscarTodos(pageable.getPageNumber(), pageable.getPageSize())).withSelfRel();
+		return assembler.toModel(VoPage,link);
 	}
 	
-	public List<Problema> buscarIdOrigem(String Idorigem) {
-		List<Problema> problema = repository.buscarIdOrigem(Idorigem);
-        return problema;
+	public PagedModel<EntityModel<ProblemaVO>> buscarIdOrigem(String Idorigem, Pageable pageable) {
+		Page<Problema> problema = repository.buscarIdOrigem(Idorigem,pageable);
+		Page<ProblemaVO> VoPage = problema.map(this::retornarVOcomLinkTo);
+		
+        Link link = linkTo(methodOn(ProblemaController.class).
+        		buscarTodos(pageable.getPageNumber(), pageable.getPageSize())).withSelfRel();
+		return assembler.toModel(VoPage,link);
 	}
 	
-	public List<Problema> buscarAssunto(String assunto) {
-		List<Problema> problema = repository.buscarPorAssunto(assunto);
-        return problema;
+	public PagedModel<EntityModel<ProblemaVO>> buscarAssunto(String assunto, Pageable pageable) {
+		Page<Problema> problema = repository.buscarPorAssunto(assunto,pageable);
+		Page<ProblemaVO> VoPage = problema.map(this::retornarVOcomLinkTo);
+		
+        Link link = linkTo(methodOn(ProblemaController.class).
+        		buscarTodos(pageable.getPageNumber(), pageable.getPageSize())).withSelfRel();
+		return assembler.toModel(VoPage,link);
 	}
 	
-	public List<Problema> buscarTitulo(String titulo) {
-		List<Problema> problema = repository.buscarPorTitulo(titulo);
-        return problema;
+	public PagedModel<EntityModel<ProblemaVO>> buscarTitulo(String titulo, Pageable pageable) {
+		Page<Problema> problema = repository.buscarPorTitulo(titulo,pageable);
+		Page<ProblemaVO> VoPage = problema.map(this::retornarVOcomLinkTo);
+		
+        Link link = linkTo(methodOn(ProblemaController.class).
+        		buscarTodos(pageable.getPageNumber(), pageable.getPageSize())).withSelfRel();
+		return assembler.toModel(VoPage,link);
 	}
 
-	public Problema atualizar(Long id, ProblemaAttVO pNovo) {
+	public ProblemaVO atualizar(Long id, ProblemaAttVO pNovo) {
 		Problema p = buscar(id);
 		if(p == null) {
 			return null;
@@ -153,17 +191,17 @@ public class ProblemaService {
 		p.setFaixa(pNovo.getFaixa());
 		p.setIdOriginal(pNovo.getIdOriginal());
 		p.setOrigem(pNovo.getOrigem());
-		return salvar(p);
+		return retornarVOcomLinkTo(salvar(p));
 	}
 	
-	public Problema atualizar(Long id, MultipartFile file) {
+	public ProblemaVO atualizar(Long id, MultipartFile file) {
 		Problema p = buscar(id);
 		if(p == null) {
 			return null;
 		}
 		arquivoService.deletar(p.getProblema());
 		p.setProblema(arquivoService.storeFile(file));
-		return p;
+		return retornarVOcomLinkTo(p);
 	}
 
 	public Boolean deletar(Long id) {
@@ -188,9 +226,25 @@ public class ProblemaService {
 		if(p == null) {
 			return false;
 		}
-		p.setAssuntos(p.getAssuntos() + ", " + assuntoAdicionar);
-		salvar(p);
-		return true;
+		
+		String assunto = p.getAssuntos();
+		String[] assuntos = assunto.split(", ");
+		String assuntoFinal = "";
+		Boolean flag = true;
+		
+		for(String s : assuntos) {
+			if(s.equals(assuntoAdicionar)) {
+				flag = false;
+			}
+			assuntoFinal += s + ", ";
+		}
+		
+		if(flag) {
+			p.setAssuntos(assuntoFinal + assuntoAdicionar);
+			salvar(p);
+		}
+		
+		return flag;
 	}
 	
 	public Boolean removerAssunto(Long id, String assuntoRemover) {
@@ -199,32 +253,32 @@ public class ProblemaService {
 			return false;
 		}
 		String assunto = p.getAssuntos();
-		String[] assuntos = assunto.split(",");
+		String[] assuntos = assunto.split(", ");
 		String assuntoFinal = "";
 		
 		for(String s : assuntos) {
-			if(!s.equals(assunto)) {
-				assuntoFinal += s + ",";
+			if(!s.equals(assuntoRemover)) {
+				assuntoFinal += s + ", ";
 			}
 		}
-		assuntoFinal.subSequence(0, assuntoFinal.length()-1);
+		assuntoFinal.subSequence(0, assuntoFinal.length()-2);
 		p.setAssuntos(assuntoFinal);
 		salvar(p);
 		return true;
 	}
 	
-	public Problema ativarProblema(Long id) {
+	public ProblemaVO ativarProblema(Long id) {
 		Problema p = buscar(id);
 		p.setAtivo(true);
 		userService.atualizarPontos(p.getUsuario(), qntPontosProblema + qntPontosSolucao + (qntPontosDica * 10), true);
-		return salvar(p);
+		return retornarVOcomLinkTo(salvar(p));
 	}
 	
-	public Problema desativarProblema(Long id) {
+	public ProblemaVO desativarProblema(Long id) {
 		Problema p = buscar(id);
 		p.setAtivo(false);
 		userService.atualizarPontos(p.getUsuario(), qntPontosProblema - qntPontosSolucao, false);
-		return salvar(p);
+		return retornarVOcomLinkTo(salvar(p));
 	}
 	
 	public ProblemaVO retornarVOcomLinkTo(Problema u) {

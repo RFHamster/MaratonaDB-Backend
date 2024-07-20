@@ -1,7 +1,7 @@
 package com.rfhamster.maratonaDB.repositories;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,23 +11,23 @@ import com.rfhamster.maratonaDB.model.Problema;
 
 public interface ProblemaRepository extends JpaRepository<Problema,Long>{
 	@Query("SELECT p FROM Problema p WHERE p.ativo = true")
-    List<Problema> buscarProblemasAtivos();
+	Page<Problema> buscarProblemasAtivos(Pageable pageable);
 	
 	@Query("SELECT p FROM Problema p WHERE p.ativo = false")
-    List<Problema> buscarProblemasDesativados();
+	Page<Problema> buscarProblemasDesativados(Pageable pageable);
 	
 	@Query("SELECT p FROM Problema p WHERE p.faixa = :faixa")
-    List<Problema> buscarPorFaixa(@Param("faixa") FaixasEnum faixa);
+	Page<Problema> buscarPorFaixa(@Param("faixa") FaixasEnum faixa, Pageable pageable);
 	
 	@Query("SELECT p FROM Problema p WHERE p.origem = :origem")
-    List<Problema> buscarPorOrigem(@Param("origem") String origem);
+	Page<Problema> buscarPorOrigem(@Param("origem") String origem, Pageable pageable);
 	
 	@Query("SELECT p FROM Problema p WHERE p.assuntos LIKE %:termo%")
-	List<Problema> buscarPorAssunto(@Param("termo") String termo);
+	Page<Problema> buscarPorAssunto(@Param("termo") String termo, Pageable pageable);
 	
 	@Query("SELECT p FROM Problema p WHERE p.titulo LIKE %:termo%")
-	List<Problema> buscarPorTitulo(@Param("termo") String termo);
+	Page<Problema> buscarPorTitulo(@Param("termo") String termo, Pageable pageable);
 	
 	@Query("SELECT p FROM Problema p WHERE p.idOriginal = :idOriginal")
-	List<Problema> buscarIdOrigem(@Param("idOriginal") String idOriginal);
+	Page<Problema> buscarIdOrigem(@Param("idOriginal") String idOriginal, Pageable pageable);
 }
