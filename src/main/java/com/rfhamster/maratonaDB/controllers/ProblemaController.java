@@ -34,7 +34,7 @@ public class ProblemaController {
 	@GetMapping(value = "")
 	public ResponseEntity<?> buscarTodos(
 			@RequestParam(value = "page", defaultValue = "0") Integer page,
-			@RequestParam(value = "limit", defaultValue = "12") Integer limit
+			@RequestParam(value = "limit", defaultValue = "10") Integer limit
 			) {
 		try {
 			Pageable pageable = PageRequest.of(page, limit);
@@ -187,7 +187,7 @@ public class ProblemaController {
 		}
 	}
 	
-	@PatchMapping(value = "/{codigo}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	@PatchMapping(value = "arquivo/{codigo}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<?> atualizarArquivoProblema(@ModelAttribute Long codigo, @ModelAttribute MultipartFile file) {
 		if (file == null || codigo == null)
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid client request!");
@@ -219,7 +219,7 @@ public class ProblemaController {
 	}
 	
 	
-	@PatchMapping(path = "/ativarProblema/{codigo}")
+	@PatchMapping(path = "/ativar/{codigo}")
 	public ResponseEntity<?> ativarProblema(@PathVariable Long codigo) {
 		if(codigo == null) {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Codigo nao encontrado");
@@ -232,7 +232,7 @@ public class ProblemaController {
 	    }
 	}
 	
-	@PatchMapping(path = "/desativarProblema/{codigo}")
+	@PatchMapping(path = "/desativar/{codigo}")
 	public ResponseEntity<?> desativarProblema(@PathVariable Long codigo) {
 		if(codigo == null) {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Codigo nao encontrado");

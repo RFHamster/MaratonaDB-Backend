@@ -261,8 +261,7 @@ public class ProblemaService {
 				assuntoFinal += s + ", ";
 			}
 		}
-		assuntoFinal.subSequence(0, assuntoFinal.length()-2);
-		p.setAssuntos(assuntoFinal);
+		p.setAssuntos(assuntoFinal.substring(0, assunto.length()-2));
 		salvar(p);
 		return true;
 	}
