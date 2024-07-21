@@ -15,8 +15,6 @@ import com.rfhamster.maratonaDB.model.Arquivo;
 import com.rfhamster.maratonaDB.services.ArquivoService;
 import com.rfhamster.maratonaDB.vo.ArquivoVO;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 @RestController
 @RequestMapping("/arquivos")
 public class ArquivoController {
