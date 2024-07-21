@@ -32,8 +32,15 @@ import com.rfhamster.maratonaDB.vo.security.AccountCredentialsVO;
 import com.rfhamster.maratonaDB.vo.security.AccountSignInVO;
 import com.rfhamster.maratonaDB.vo.security.TokenVO;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth/v1")
+@Tag(name="Autenticação", description = "Enpoint para autenticar/cadastrar usuários")
 public class AuthController {
 	
 	@Autowired
@@ -46,6 +53,31 @@ public class AuthController {
 	private UserServices service;
 	
 	@PostMapping(value = "/register")
+	@Operation(summary = "Registrar um usuário comum", description = "Registrar um usuário comum com os dados fornecidos",
+		    tags = {"Autenticação, Usuários"},
+		    responses = {
+		        @ApiResponse(
+		            responseCode = "200",
+		            description = "Sucesso",
+		            content = @Content(schema = @Schema(implementation = User.class))
+		        ),
+		        @ApiResponse(
+		            responseCode = "403",
+		            description = "Requisição de cliente inválida",
+		            content = @Content(schema = @Schema(implementation = String.class))
+		        ),
+		        @ApiResponse(
+		            responseCode = "409",
+		            description = "Conflito - Dados duplicados",
+		            content = @Content(schema = @Schema(implementation = String.class))
+		        ),
+		        @ApiResponse(
+		            responseCode = "500",
+		            description = "Erro interno do servidor",
+		            content = @Content(schema = @Schema(implementation = String.class))
+		        )
+		    }
+		)
 	public ResponseEntity<?> registrarUserComum(@RequestBody AccountSignInVO data) {
 		if (checkIfParamsIsNotNull(data))
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid client request!");
@@ -79,6 +111,20 @@ public class AuthController {
 	}
 	
 	@PostMapping(value = "/register/adm")
+	@Operation(summary = "Registrar um administrador", description = "Registrar um usuário administrador com os dados fornecidos", tags = {"Usuário"},
+		    responses = {
+		        @ApiResponse(
+		            responseCode = "200",
+		            description = "Sucesso",
+		            content = @Content(schema = @Schema(implementation = User.class))
+		        ),
+		        @ApiResponse(
+		            responseCode = "500",
+		            description = "Erro interno do servidor",
+		            content = @Content(schema = @Schema(implementation = String.class))
+		        )
+		    }
+		)
 	public ResponseEntity<?> registrarUserADM(@RequestBody AccountCredentialsVO data) {
 		PasswordEncoder encoder = new BCryptPasswordEncoder();
 		User u = service.salvarUserADM(data.getUsername(), encoder.encode(data.getPassword()));
@@ -86,6 +132,25 @@ public class AuthController {
 	}
 	
 	@PutMapping(value = "/atualizar-usuario")
+	@Operation(summary = "Atualizar usuário",description = "Atualizar as informações de um usuário",tags = {"Usuário"},
+		    responses = {
+		        @ApiResponse(
+		            responseCode = "200",
+		            description = "Sucesso",
+		            content = @Content(schema = @Schema(implementation = User.class))
+		        ),
+		        @ApiResponse(
+		            responseCode = "404",
+		            description = "Usuário não encontrado",
+		            content = @Content(schema = @Schema(implementation = String.class))
+		        ),
+		        @ApiResponse(
+		            responseCode = "500",
+		            description = "Erro interno do servidor",
+		            content = @Content(schema = @Schema(implementation = String.class))
+		        )
+		    }
+		)
 	public ResponseEntity<?> atualizarUsuario(@RequestBody AccountCredentialsVO data) {
 		try {
 			PasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -101,6 +166,25 @@ public class AuthController {
 	}
 
 	@PostMapping(value = "/signin")
+	@Operation(summary = "Autenticação de usuário",description = "Autenticar um usuário com as credenciais fornecidas",tags = {"Autenticação"},
+		    responses = {
+		        @ApiResponse(
+		            responseCode = "200",
+		            description = "Sucesso",
+		            content = @Content(schema = @Schema(implementation = Map.class))
+		        ),
+		        @ApiResponse(
+		            responseCode = "403",
+		            description = "Requisição de cliente inválida",
+		            content = @Content(schema = @Schema(implementation = String.class))
+		        ),
+		        @ApiResponse(
+		            responseCode = "500",
+		            description = "Erro interno do servidor",
+		            content = @Content(schema = @Schema(implementation = String.class))
+		        )
+		    }
+		)
 	public ResponseEntity<?> signin(@RequestBody AccountCredentialsVO data) {
 		if (checkIfParamsIsNotNull(data))
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid client request!");
@@ -130,6 +214,30 @@ public class AuthController {
 
 	@SuppressWarnings("rawtypes")
 	@PutMapping(value = "/refresh/{username}")
+	@Operation(summary = "Atualizar token",description = "Atualizar o token de um usuário",tags = {"Autenticação"},
+		    responses = {
+		        @ApiResponse(
+		            responseCode = "200",
+		            description = "Sucesso",
+		            content = @Content(schema = @Schema(implementation = TokenVO.class))
+		        ),
+		        @ApiResponse(
+		            responseCode = "403",
+		            description = "Requisição de cliente inválida",
+		            content = @Content(schema = @Schema(implementation = String.class))
+		        ),
+		        @ApiResponse(
+		            responseCode = "404",
+		            description = "Usuário não encontrado",
+		            content = @Content(schema = @Schema(implementation = String.class))
+		        ),
+		        @ApiResponse(
+		            responseCode = "500",
+		            description = "Erro interno do servidor",
+		            content = @Content(schema = @Schema(implementation = String.class))
+		        )
+		    }
+		)
 	public ResponseEntity refreshToken(@PathVariable("username") String username,
 			@RequestHeader("Authorization") String refreshToken) {
 

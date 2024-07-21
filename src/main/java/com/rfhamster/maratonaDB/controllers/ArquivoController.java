@@ -15,13 +15,38 @@ import com.rfhamster.maratonaDB.model.Arquivo;
 import com.rfhamster.maratonaDB.services.ArquivoService;
 import com.rfhamster.maratonaDB.vo.ArquivoVO;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
-@RequestMapping("/arquivos")
+@RequestMapping("/api/arquivos/v1")
+@Tag(name="Arquivo", description = "Enpoint para recuperação/download de arquivos")
 public class ArquivoController {
 	@Autowired
 	ArquivoService service;
 	
 	@GetMapping(path = "/{codigo}")
+	@Operation(summary = "Buscar um dados de um arquivo", description = "Buscar dados de um arquivo a partir do código fornecido", tags= {"Arquivo"},
+			responses = {
+			        @ApiResponse(
+			            responseCode = "200",
+			            description = "Sucesso",
+			            content = @Content(schema = @Schema(implementation = ArquivoVO.class))
+			        ),
+			        @ApiResponse(
+			            responseCode = "404",
+			            description = "Arquivo não encontrado",
+			            content = @Content(schema = @Schema(implementation = String.class))
+			        ),
+			        @ApiResponse(
+			            responseCode = "500",
+			            description = "Erro interno do servidor",
+			            content = @Content(schema = @Schema(implementation = String.class))
+			        )
+			    })
 	public ResponseEntity< ? > buscar(@PathVariable String codigo) {
 		try {
 			ArquivoVO u = service.buscarByIdVO(codigo);
@@ -36,6 +61,24 @@ public class ArquivoController {
 	}
 	
 	@GetMapping(path = "/baixar/{filename:.+}")
+	@Operation(summary = "Baixar um arquivo", description = "Baixar um arquivo a partir do nome fornecido", tags= {"Arquivo"},
+			responses = {
+			        @ApiResponse(
+			            responseCode = "200",
+			            description = "Sucesso",
+			            content = @Content(mediaType = "application/octet-stream", schema = @Schema(implementation = Resource.class))
+			        ),
+			        @ApiResponse(
+			            responseCode = "404",
+			            description = "Arquivo não encontrado ou corrompido",
+			            content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class))
+			        ),
+			        @ApiResponse(
+			            responseCode = "500",
+			            description = "Erro interno do servidor",
+			            content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class))
+			        )
+			    })
 	public ResponseEntity< ? > loadResource(@PathVariable String filename) {
 		try {
 			Arquivo a = service.buscarById(filename);

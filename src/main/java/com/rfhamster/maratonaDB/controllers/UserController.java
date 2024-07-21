@@ -25,8 +25,11 @@ import com.rfhamster.maratonaDB.services.UserServices;
 import com.rfhamster.maratonaDB.vo.UserSigninVO;
 import com.rfhamster.maratonaDB.vo.security.AccountSignInVO;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users/v1")
+@Tag(name="Usuário", description = "Enpoint para fazer CRUD de Usuários")
 public class UserController {
 	
 	@Autowired

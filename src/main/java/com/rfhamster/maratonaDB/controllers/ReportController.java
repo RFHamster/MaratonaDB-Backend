@@ -23,8 +23,11 @@ import com.rfhamster.maratonaDB.model.Report;
 import com.rfhamster.maratonaDB.services.ReportService;
 import com.rfhamster.maratonaDB.vo.ReportVO;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
-@RequestMapping("/reports")
+@RequestMapping("/api/reports/v1")
+@Tag(name="Report", description = "Enpoint para fazer CRUD de Report")
 public class ReportController {
 	@Autowired
 	ReportService reportService;

@@ -25,8 +25,11 @@ import com.rfhamster.maratonaDB.vo.ProblemaAttVO;
 import com.rfhamster.maratonaDB.vo.ProblemaInsertVO;
 import com.rfhamster.maratonaDB.vo.ProblemaVO;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
-@RequestMapping("/problema")
+@RequestMapping("/api/problema/v1")
+@Tag(name="Problema", description = "Enpoint para fazer CRUD de Problema")
 public class ProblemaController {
 	@Autowired
 	ProblemaService service;
