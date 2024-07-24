@@ -37,7 +37,6 @@ public class SecurityConfig {
 
 	@Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		
 		//@formatter:off
         return http
             .httpBasic(basic -> basic.disable())

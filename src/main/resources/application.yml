@@ -1,0 +1,35 @@
+cors:
+  originPatterns: http://localhost:4200,http://localhost:8080
+file:
+  upload-dir: /Workspace/MaratonaDB/Back-end/arquivos
+security:
+  jwt:
+    token:
+      secret-key: h4mst3r
+      expire-lenght: 86400000
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/maratonadb?useSSL=false&useTimezone=true&serverTimezone=America/Sao_Paulo&allowPublicKeyRetrieval=true
+    username: root
+    password: r3h8u4a2n5
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+    show-sql: true
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 2KB
+      max-file-size: 2MB
+      max-request-size: 3MB
+      
+springdoc:
+  pathsToMatch: /api/**/v1/**
+  swagger-ui:
+    use-root-path: true
+  
